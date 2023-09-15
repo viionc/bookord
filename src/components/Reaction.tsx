@@ -11,16 +11,16 @@ const Reaction: React.FC<Message> = (message: Message) => {
 
     return (
         <div onClick={() => handleLikeMessage(message)}>
-            {message.likes.length ? (
-                <div className="d-flex flex-row justify-content-center align-items-center h-100 gap-1">
+            <div className="d-flex flex-row justify-content-center align-items-center h-100 gap-2">
+                {currentUser && message.likes.includes(currentUser.uid) ? (
                     <i className="fa-solid fa-heart" style={{color: "#ff0000"}}></i>
-                    <p className="m-0" style={{fontSize: "16px"}}>
-                        {message.likes.length}
-                    </p>
-                </div>
-            ) : (
-                <i className="fa-regular fa-heart" style={{color: "#ff0000"}}></i>
-            )}
+                ) : (
+                    <i className="fa-regular fa-heart" style={{color: "#ff0000"}}></i>
+                )}
+                <p className="m-0" style={{fontSize: "16px"}}>
+                    {message.likes.length ? message.likes.length : ""}
+                </p>
+            </div>
         </div>
     );
 };

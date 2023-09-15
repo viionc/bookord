@@ -1,0 +1,15 @@
+h5 {
+    height: 40px;
+    width: 100%;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.active {
+    background-color: #434343 !important;
+    color: white !important;
+}
+.inactive {
+    background-color: none !important;
+    color: #cfcdcd !important;
+}

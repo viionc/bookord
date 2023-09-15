@@ -1,0 +1,23 @@
+{
+    "chats": {
+        "general": {
+            "title": "General chat."
+        }
+    },
+    "messages": {
+        "general": {
+            "m1": {
+                "sender": "shtos",
+                "timestamp": 1694713042290,
+                "body": "1",
+                "likes": 0
+            },
+            "m2": {
+                "sender": "papiez",
+                "timestamp": 1694713042290,
+                "body": "2",
+                "likes": 1
+            }
+        }
+    }
+}

@@ -20,7 +20,6 @@ import {
 } from "firebase/firestore";
 import {v4 as uuid} from "uuid";
 
-console.log();
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
     authDomain: "socialbook-6872e.web.app",
@@ -31,24 +30,20 @@ const firebaseConfig = {
     measurementId: "G-HKZH7WT4QG",
 };
 
-export type Message = {
-    username: string;
-    channel: string;
-    uid: string;
-    timestamp: number;
-    body: string;
-    likes: number;
-};
 type FirebaseContextProps = {
     currentUser: User | null;
     registerUser: (ussername: string, email: string, password: string) => void;
     loginUser: (email: string, password: string) => void;
     logoutUser: () => void;
     sendMessage: (message: Message) => void;
-    currentChannel: string;
+    currentChannel: Channel;
     channels: Channel[];
     addNewChannel: (name: string) => void;
     changeChannel: (name: string) => void;
+    clearChannel: () => void;
+    likeMessage: (message: Message) => void;
+    updateCurrentChannel: (messages: Message[]) => void;
+    setCurrentChannel: Function;
 };
 
 type UserProfile = {
@@ -68,7 +63,14 @@ export type Channel = {
     role: UserRole;
     members: string[];
 };
-
+export type Message = {
+    username: string;
+    userUid: string;
+    messageUid: string;
+    timestamp: number;
+    body: string;
+    likes: string[];
+};
 const FirebaseContext = createContext({} as FirebaseContextProps);
 
 export function useFirebaseContext() {
@@ -87,7 +89,14 @@ export const db = getFirestore(app);
 
 export function FirebaseProvider({children}: FirebaseProviderProps) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const [currentChannel, setCurrentChannel] = useState("general");
+    const [currentChannel, setCurrentChannel] = useState<Channel>({
+        name: "general",
+        id: "general",
+        owner: "shtos",
+        messages: [],
+        role: "member",
+        members: [],
+    });
     const [, setUserDatabase] = useState<any[]>([]);
     const [channels, setChannels] = useState<Channel[]>([]);
 
@@ -145,7 +154,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
     // };
 
     const changeChannel = (id: string) => {
-        setCurrentChannel(id);
+        setCurrentChannel(channels.filter(channel => channel.id === id)[0]);
     };
 
     function addUserToDatabase(user: UserCredential) {
@@ -213,18 +222,44 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
 
     const sendMessage = (message: Message) => {
         if (!currentUser) return;
-        const msg = {
-            username: message.username,
-            sender: message.uid,
-            likes: message.likes,
-            timestamp: message.timestamp,
-            body: message.body,
-        };
 
-        updateDoc(doc(db, "channels", message.channel), {
+        updateDoc(doc(db, "channels", currentChannel.id), {
             messages: arrayUnion({
-                ...msg,
+                ...message,
             }),
+        });
+    };
+
+    const likeMessage = (message: Message) => {
+        if (!currentUser) return;
+        const messages = currentChannel.messages;
+        messages.forEach(msg => {
+            if (msg.messageUid === message.messageUid) {
+                msg.likes.push(currentUser.uid);
+            }
+        });
+        updateDoc(doc(db, "channels", currentChannel.id), {
+            messages: messages,
+        });
+    };
+
+    const clearChannel = () => {
+        if (!currentUser) return;
+        updateDoc(doc(db, "channels", currentChannel.id), {
+            messages: [],
+        });
+    };
+    const updateCurrentChannel = (messages: Message[]) => {
+        if (!currentUser) return;
+        setChannels(prevChannels => {
+            prevChannels.map(ch => {
+                if (ch.id === currentChannel.id) {
+                    ch.messages = messages;
+                    setCurrentChannel(ch);
+                }
+                return ch;
+            });
+            return prevChannels;
         });
     };
 
@@ -254,6 +289,10 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 currentChannel,
                 addNewChannel,
                 changeChannel,
+                clearChannel,
+                likeMessage,
+                updateCurrentChannel,
+                setCurrentChannel,
             }}
         >
             {children}

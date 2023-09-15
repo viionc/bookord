@@ -1,6 +1,7 @@
 import {Container} from "react-bootstrap";
 import {Message} from "../context/FirebaseContext";
 import {timestampToDate} from "../utilities/utilities";
+import Reaction from "./Reaction";
 
 const Card: React.FC<Message> = (message: Message) => {
     return (
@@ -9,7 +10,8 @@ const Card: React.FC<Message> = (message: Message) => {
                 <h3>{message.username}</h3>
                 <p className="text-secondary d-flex justify-content-center m-0">
                     {timestampToDate(message.timestamp)}
-                </p>{" "}
+                </p>
+                <Reaction {...message}></Reaction>
             </div>
 
             <div style={{overflowWrap: "break-word"}}>{message.body}</div>

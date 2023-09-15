@@ -12,6 +12,7 @@
   "dependencies": {
     "bootstrap": "^5.3.1",
     "emoji-picker-react": "^4.5.1",
+    "fa": "^1.0.1",
     "firebase": "^10.3.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",

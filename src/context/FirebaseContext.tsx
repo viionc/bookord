@@ -20,8 +20,9 @@ import {
 } from "firebase/firestore";
 import {v4 as uuid} from "uuid";
 
+console.log();
 const firebaseConfig = {
-    apiKey: "AIzaSyCkf87Kd5gK41YYrSKKn2gCGEJh3JFdnTc",
+    apiKey: import.meta.env.VITE_API_KEY,
     authDomain: "socialbook-6872e.web.app",
     projectId: "socialbook-6872e",
     storageBucket: "socialbook-6872e.appspot.com",

@@ -14,7 +14,7 @@ export default function ChannelList() {
         openModal("addnewchannel");
     };
     const handleChannelClicked = (channel: Channel) => {
-        if (channel.id === currentChannel) return;
+        if (channel.id === currentChannel.id) return;
         changeChannel(channel.id);
     };
 
@@ -39,7 +39,7 @@ export default function ChannelList() {
                         <h5
                             key={channel.id}
                             className={`rounded ${
-                                channel.id === currentChannel ? styles.active : styles.inactive
+                                channel.id === currentChannel.id ? styles.active : styles.inactive
                             }`}
                             onClick={() => handleChannelClicked(channel)}
                         >

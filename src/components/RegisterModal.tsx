@@ -1,6 +1,6 @@
 import {Modal, Button, Form} from "react-bootstrap";
 import {useModalsContext} from "../context/ModalsContext";
-import {useState} from "react";
+import {FormEvent, useState} from "react";
 import {useFirebaseContext} from "../context/FirebaseContext";
 
 export default function RegisterModal() {
@@ -66,13 +66,18 @@ export default function RegisterModal() {
         registerUser(email, password, username);
     };
 
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        handleRegisterButton();
+    };
+
     return (
         <Modal show={isRegisterModalOpen} onHide={handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Register:</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form onSubmit={e => e.preventDefault()}>
+                <Form onSubmit={handleSubmit}>
                     <Form.Group>
                         <Form.Label>Username:</Form.Label>
                         <Form.Control
@@ -85,8 +90,6 @@ export default function RegisterModal() {
                             <Form.Text className="text-danger">Enter an username.</Form.Text>
                         )}
                     </Form.Group>
-                </Form>
-                <Form>
                     <Form.Group>
                         <Form.Label>Email:</Form.Label>
                         <Form.Control
@@ -99,8 +102,6 @@ export default function RegisterModal() {
                             <Form.Text className="text-danger">Enter a valid email.</Form.Text>
                         )}
                     </Form.Group>
-                </Form>
-                <Form>
                     <Form.Group>
                         <Form.Label>Password:</Form.Label>
                         <Form.Control

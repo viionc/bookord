@@ -1,11 +1,11 @@
+import {User} from "firebase/auth";
 import {Message, useFirebaseContext} from "../context/FirebaseContext";
 
 const Reaction: React.FC<Message> = (message: Message) => {
     const {likeMessage, currentUser, removeLikeMessage} = useFirebaseContext();
 
     const handleLikeMessage = (message: Message) => {
-        if (!currentUser) return;
-        if (message.likes.includes(currentUser.uid)) {
+        if (message.likes.includes((currentUser as User).uid)) {
             removeLikeMessage(message);
             return;
         }
@@ -15,7 +15,7 @@ const Reaction: React.FC<Message> = (message: Message) => {
     return (
         <div onClick={() => handleLikeMessage(message)}>
             <div className="d-flex flex-row justify-content-center align-items-center h-100 gap-2">
-                {currentUser && message.likes.includes(currentUser.uid) ? (
+                {message.likes.includes((currentUser as User).uid) ? (
                     <i className="fa-solid fa-heart" style={{color: "#ff0000"}}></i>
                 ) : (
                     <i className="fa-regular fa-heart" style={{color: "#ff0000"}}></i>

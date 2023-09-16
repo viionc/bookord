@@ -2,7 +2,6 @@ import {User} from "firebase/auth/cordova";
 import {ReactNode, createContext, useContext, useEffect, useState} from "react";
 import {initializeApp} from "firebase/app";
 import {
-    UserCredential,
     createUserWithEmailAndPassword,
     getAuth,
     signInWithEmailAndPassword,
@@ -17,6 +16,8 @@ import {
     getFirestore,
     setDoc,
     updateDoc,
+    onSnapshot,
+    query,
 } from "firebase/firestore";
 import {v4 as uuid} from "uuid";
 
@@ -36,15 +37,17 @@ type FirebaseContextProps = {
     loginUser: (email: string, password: string) => void;
     logoutUser: () => void;
     sendMessage: (message: Message) => void;
-    currentChannel: Channel;
+    currentChannel: string;
     channels: Channel[];
     addNewChannel: (name: string) => void;
     changeChannel: (name: string) => void;
     clearChannel: () => void;
     likeMessage: (message: Message) => void;
     updateCurrentChannel: (messages: Message[]) => void;
-    setCurrentChannel: Function;
     removeLikeMessage: (messages: Message) => void;
+    userProfile: UserProfile | null;
+    userDatabase: UserProfile[];
+    dataLoaded: boolean;
 };
 
 type UserProfile = {
@@ -90,16 +93,34 @@ export const db = getFirestore(app);
 
 export function FirebaseProvider({children}: FirebaseProviderProps) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const [currentChannel, setCurrentChannel] = useState<Channel>({
-        name: "general",
-        id: "general",
-        owner: "shtos",
-        messages: [],
-        role: "member",
-        members: [],
-    });
-    const [, setUserDatabase] = useState<any[]>([]);
+    const [currentChannel, setCurrentChannel] = useState<string>("general");
+    const [userDatabase, setUserDatabase] = useState<UserProfile[]>([]);
     const [channels, setChannels] = useState<Channel[]>([]);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [dataLoaded, setDataLoaded] = useState(false);
+
+    useEffect(() => {
+        if (!currentUser) return;
+        let q = query(collection(db, "users"));
+        const unsubscribe = onSnapshot(q, querySnapshot => {
+            console.log("user data from database fetched");
+            let users: UserProfile[] = [];
+            querySnapshot.forEach(doc => users.push(doc.data() as UserProfile));
+            setUserDatabase(users);
+        });
+        return unsubscribe;
+    }, [currentUser]);
+
+    useEffect(() => {
+        if (!currentUser) return;
+        const unsubscribe = onSnapshot(doc(db, "channels", currentChannel), doc => {
+            console.log("channel data from database fetched");
+            if (doc.exists()) {
+                updateCurrentChannel(doc.data().messages as Message[]);
+            }
+        });
+        return unsubscribe;
+    }, [currentChannel, currentUser]);
 
     const registerUser = (email: string, password: string, username: string) => {
         createUserWithEmailAndPassword(auth, email, password)
@@ -107,8 +128,8 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 updateProfile(userCredential.user, {
                     displayName: username,
                 })
-                    .then(() => addUserToDatabase(userCredential))
-                    .then(() => setCurrentUser(userCredential.user));
+                    .then(() => setCurrentUser(userCredential.user))
+                    .then(() => addUserToDatabase(createUserProfile(userCredential.user)));
             })
             .catch(error => {
                 const errorCode = error.code;
@@ -117,17 +138,13 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             });
     };
 
-    const loginUser = (email: string, password: string) => {
+    const loginUser = (email: string, password: string): void | null => {
         signInWithEmailAndPassword(auth, email, password)
             .then(userCredential => setCurrentUser(userCredential.user))
-            .then(() => {
-                getMessages();
-            })
             .catch(error => {
-                const errorCode = error.code;
+                // const errorCode = error.code;
                 const errorMessage = error.message;
-
-                console.log(errorCode, errorMessage);
+                alert(errorMessage);
             });
     };
 
@@ -140,6 +157,16 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             .catch(error => {
                 console.log(error);
             });
+    };
+
+    const createUserProfile = (user: User): UserProfile => {
+        const profile: UserProfile = {
+            displayName: user.displayName || "",
+            uid: user.uid,
+            role: "member",
+            photoURL: user.photoURL,
+        };
+        return profile;
     };
 
     // const isLoggedIn = () => {
@@ -155,21 +182,13 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
     // };
 
     const changeChannel = (id: string) => {
-        setCurrentChannel(channels.filter(channel => channel.id === id)[0]);
+        setCurrentChannel(id);
     };
 
-    function addUserToDatabase(user: UserCredential) {
-        if (!currentUser) return;
-        const newUser: UserProfile = {
-            displayName: user.user.displayName as string,
-            uid: user.user.uid,
-            photoURL: user.user.photoURL,
-            role: "member",
-        };
-        setDoc(doc(db, "users", newUser.uid), {
-            ...newUser,
-        });
+    function addUserToDatabase(user: UserProfile) {
+        setDoc(doc(db, "users", user.uid), user);
     }
+
     function addNewChannel(name: string) {
         if (!currentUser) return;
         const id = uuid();
@@ -198,6 +217,11 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             })
             .then(users => {
                 setUserDatabase(users);
+                return users;
+            })
+            .then(users => {
+                let profile = users.filter(user => user.uid === currentUser.uid)[0];
+                setUserProfile(profile);
             });
     }
 
@@ -211,23 +235,21 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                         id: doc.id,
                         ...doc.data(),
                     } as Channel);
-                    // if (doc.id == "general") {
-                    //     messages.push(...doc.data().messages);
-                    // }
                 });
             })
             .then(() => {
                 setChannels(channels);
             })
-            .then(() => {
-                setCurrentChannel(channels.filter(e => e.id === "general")[0]);
-            });
+            .then(() => setDataLoaded(true));
+        // .then(() => {
+        //     setCurrentChannel(channels.filter(e => e.id === "general")[0]);
+        // });
     }
 
     const sendMessage = (message: Message) => {
         if (!currentUser) return;
 
-        updateDoc(doc(db, "channels", currentChannel.id), {
+        updateDoc(doc(db, "channels", currentChannel), {
             messages: arrayUnion({
                 ...message,
             }),
@@ -236,48 +258,46 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
 
     const likeMessage = (message: Message) => {
         if (!currentUser) return;
-        const messages = currentChannel.messages;
+        const messages = channels.filter(ch => ch.id === currentChannel)[0].messages;
         messages.forEach(msg => {
             if (msg.messageUid === message.messageUid) {
                 msg.likes.push(currentUser.uid);
             }
         });
-        updateDoc(doc(db, "channels", currentChannel.id), {
+        updateDoc(doc(db, "channels", currentChannel), {
             messages: messages,
         });
     };
 
     const removeLikeMessage = (message: Message) => {
         if (!currentUser) return;
-        const messages = currentChannel.messages;
+        const messages = channels.filter(ch => ch.id === currentChannel)[0].messages;
         messages.forEach(msg => {
             if (msg.messageUid === message.messageUid) {
                 msg.likes = msg.likes.filter(uid => uid !== currentUser.uid);
             }
         });
-        updateDoc(doc(db, "channels", currentChannel.id), {
+        updateDoc(doc(db, "channels", currentChannel), {
             messages: messages,
         });
     };
 
     const clearChannel = () => {
         if (!currentUser) return;
-        updateDoc(doc(db, "channels", currentChannel.id), {
+        updateDoc(doc(db, "channels", currentChannel), {
             messages: [],
         });
     };
     const updateCurrentChannel = (messages: Message[]) => {
         if (!currentUser) return;
-        setChannels(prevChannels => {
+        setChannels(prevChannels =>
             prevChannels.map(ch => {
-                if (ch.id === currentChannel.id) {
+                if (ch.id === currentChannel) {
                     ch.messages = messages;
-                    setCurrentChannel(ch);
                 }
                 return ch;
-            });
-            return prevChannels;
-        });
+            })
+        );
     };
 
     useEffect(() => {
@@ -309,8 +329,10 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 clearChannel,
                 likeMessage,
                 updateCurrentChannel,
-                setCurrentChannel,
                 removeLikeMessage,
+                userProfile,
+                userDatabase,
+                dataLoaded,
             }}
         >
             {children}

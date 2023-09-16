@@ -1,35 +1,31 @@
 import {Container} from "react-bootstrap";
-import {Message, db, useFirebaseContext} from "../context/FirebaseContext";
+import {Message, useFirebaseContext} from "../context/FirebaseContext";
 import Card from "./Card";
 import {useEffect, useState} from "react";
-import {doc, onSnapshot} from "firebase/firestore";
 import NewMessageInput from "./NewMessageInput";
 
 export default function Feed() {
-    const {currentUser, currentChannel, clearChannel, updateCurrentChannel} = useFirebaseContext();
+    const {currentChannel, clearChannel, channels} = useFirebaseContext();
 
     const [messages, setMessages] = useState<Message[]>([]);
 
-    useEffect(() => {
-        if (!currentUser) {
-            setMessages([]);
-            return;
-        }
-        const subscribe = onSnapshot(doc(db, "channels", currentChannel.id), doc => {
-            if (doc.exists()) {
-                setMessages(doc.data().messages as Message[]);
-                updateCurrentChannel(doc.data().messages as Message[]);
-            }
-        });
+    // useEffect(()=>{
 
-        return subscribe;
-    }, [currentUser, currentChannel]);
+    // },[currentChannel])
 
     //setMessages(doc.data().messages as Message[])
     useEffect(() => {
         let objDiv = document.getElementById("message-container") as HTMLElement;
         objDiv.scrollTop = objDiv.scrollHeight;
-    }, [currentChannel]);
+    }, [messages]);
+
+    useEffect(() => {
+        const messages = channels.filter(ch => ch.id === currentChannel)[0]
+            ? channels.filter(ch => ch.id === currentChannel)[0].messages
+            : [];
+        setMessages(messages);
+    }, [channels, currentChannel]);
+
     return (
         <Container
             className="h-100 d-flex flex-column position-relative"

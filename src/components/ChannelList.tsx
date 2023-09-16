@@ -10,11 +10,10 @@ export default function ChannelList() {
     const {openModal} = useModalsContext();
 
     const handleAddChannel = () => {
-        console.log("test");
         openModal("addnewchannel");
     };
     const handleChannelClicked = (channel: Channel) => {
-        if (channel.id === currentChannel.id) return;
+        if (channel.id === currentChannel) return;
         changeChannel(channel.id);
     };
 
@@ -39,7 +38,7 @@ export default function ChannelList() {
                         <h5
                             key={channel.id}
                             className={`rounded ${
-                                channel.id === currentChannel.id ? styles.active : styles.inactive
+                                channel.id === currentChannel ? styles.active : styles.inactive
                             }`}
                             onClick={() => handleChannelClicked(channel)}
                         >

@@ -44,6 +44,7 @@ type FirebaseContextProps = {
     likeMessage: (message: Message) => void;
     updateCurrentChannel: (messages: Message[]) => void;
     setCurrentChannel: Function;
+    removeLikeMessage: (messages: Message) => void;
 };
 
 type UserProfile = {
@@ -217,6 +218,9 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             })
             .then(() => {
                 setChannels(channels);
+            })
+            .then(() => {
+                setCurrentChannel(channels.filter(e => e.id === "general")[0]);
             });
     }
 
@@ -236,6 +240,19 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         messages.forEach(msg => {
             if (msg.messageUid === message.messageUid) {
                 msg.likes.push(currentUser.uid);
+            }
+        });
+        updateDoc(doc(db, "channels", currentChannel.id), {
+            messages: messages,
+        });
+    };
+
+    const removeLikeMessage = (message: Message) => {
+        if (!currentUser) return;
+        const messages = currentChannel.messages;
+        messages.forEach(msg => {
+            if (msg.messageUid === message.messageUid) {
+                msg.likes = msg.likes.filter(uid => uid !== currentUser.uid);
             }
         });
         updateDoc(doc(db, "channels", currentChannel.id), {
@@ -293,6 +310,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 likeMessage,
                 updateCurrentChannel,
                 setCurrentChannel,
+                removeLikeMessage,
             }}
         >
             {children}

@@ -1,11 +1,14 @@
 import {Message, useFirebaseContext} from "../context/FirebaseContext";
 
 const Reaction: React.FC<Message> = (message: Message) => {
-    const {likeMessage, currentUser} = useFirebaseContext();
+    const {likeMessage, currentUser, removeLikeMessage} = useFirebaseContext();
 
     const handleLikeMessage = (message: Message) => {
         if (!currentUser) return;
-        if (message.likes.includes(currentUser.uid)) return;
+        if (message.likes.includes(currentUser.uid)) {
+            removeLikeMessage(message);
+            return;
+        }
         likeMessage(message);
     };
 

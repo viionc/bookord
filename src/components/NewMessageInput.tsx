@@ -2,6 +2,7 @@ import {useState} from "react";
 // import {Button} from "react-bootstrap";
 import {useFirebaseContext} from "../context/FirebaseContext";
 import {v4 as uuid} from "uuid";
+import {User} from "firebase/auth";
 // import EmojiPicker from "emoji-picker-react";
 // import {Theme} from "emoji-picker-react";
 
@@ -10,10 +11,9 @@ export default function Feed() {
     const {currentUser, sendMessage} = useFirebaseContext();
 
     const handleSend = () => {
-        if (!currentUser) return;
         sendMessage({
-            username: currentUser.displayName || "anonymous",
-            userUid: currentUser.uid,
+            username: (currentUser as User).displayName || "anonymous",
+            userUid: (currentUser as User).uid,
             messageUid: uuid(),
             body: messageBody,
             timestamp: Date.now(),
@@ -49,7 +49,7 @@ export default function Feed() {
                 onInput={e => changeTextAreaSize(e)}
                 onKeyDown={e => checkKey(e)}
                 value={messageBody}
-                disabled={currentUser ? false : true}
+                //disabled={currentUser ? false : true}
             ></textarea>
             {/* <EmojiPicker theme={Theme.DARK}></EmojiPicker> */}
             {/* <Button className="bg-secondary border-0 h-100" onClick={handleSend}>

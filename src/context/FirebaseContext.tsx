@@ -50,7 +50,7 @@ type FirebaseContextProps = {
     dataLoaded: boolean;
 };
 
-type UserProfile = {
+export type UserProfile = {
     displayName: string;
     uid: string;
     photoURL: string | null;

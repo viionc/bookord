@@ -2,11 +2,12 @@ import {Container} from "react-bootstrap";
 import {Channel, useFirebaseContext} from "../context/FirebaseContext";
 import styles from "./ChannelList.module.css";
 import {useModalsContext} from "../context/ModalsContext";
+import {UserProfile} from "firebase/auth";
 // import {useEffect} from "react";
 // import {onSnapshot, doc} from "firebase/firestore";
 
 export default function ChannelList() {
-    const {channels, currentChannel, changeChannel} = useFirebaseContext();
+    const {channels, currentChannel, changeChannel, userProfile} = useFirebaseContext();
     const {openModal} = useModalsContext();
 
     const handleAddChannel = () => {
@@ -34,6 +35,36 @@ export default function ChannelList() {
                     </span>
                 </div>
                 {channels.map(channel => {
+                    if (channel.id === "moderator" && userProfile?.roles.includes("moderator"))
+                        return (
+                            <h5
+                                key={channel.id}
+                                className={`rounded ${
+                                    channel.id === currentChannel ? styles.active : styles.inactive
+                                }`}
+                                onClick={() => handleChannelClicked(channel)}
+                            >
+                                #{channel.name}
+                            </h5>
+                        );
+                })}
+                {channels.map(channel => {
+                    if (channel.id === "general")
+                        return (
+                            <h5
+                                key={channel.id}
+                                className={`rounded ${
+                                    channel.id === currentChannel ? styles.active : styles.inactive
+                                }`}
+                                onClick={() => handleChannelClicked(channel)}
+                            >
+                                #{channel.name}
+                            </h5>
+                        );
+                })}
+
+                {channels.map(channel => {
+                    if (channel.id === "general" || channel.id === "moderator") return;
                     return (
                         <h5
                             key={channel.id}

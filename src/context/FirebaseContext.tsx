@@ -54,7 +54,7 @@ type UserProfile = {
     displayName: string;
     uid: string;
     photoURL: string | null;
-    role: UserRole;
+    roles: UserRole[];
 };
 
 export type UserRole = "member" | "moderator" | "admin";
@@ -163,7 +163,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         const profile: UserProfile = {
             displayName: user.displayName || "",
             uid: user.uid,
-            role: "member",
+            roles: ["member"],
             photoURL: user.photoURL,
         };
         return profile;

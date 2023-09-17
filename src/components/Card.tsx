@@ -10,17 +10,13 @@ const Card: React.FC<Message> = (message: Message) => {
 
     useEffect(() => {
         // if (!userProfile) return;
-        let userRole = userDatabase.filter(u => u.uid === message.userUid)[0].role;
-        switch (userRole) {
-            case "member":
-                setUserNameColor("white");
-                break;
-            case "moderator":
-                setUserNameColor("yellow");
-                break;
-            case "admin":
-                setUserNameColor("green");
-                break;
+        let userRoles = userDatabase.filter(u => u.uid === message.userUid)[0].roles;
+        if (userRoles.includes("admin")) {
+            setUserNameColor("green");
+        } else if (userRoles.includes("moderator")) {
+            setUserNameColor("yellow");
+        } else {
+            setUserNameColor("white");
         }
     }, [userProfile]);
 

@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import NewMessageInput from "./NewMessageInput";
 
 export default function Feed() {
-    const {currentChannel, clearChannel, channels} = useFirebaseContext();
+    const {currentChannel, clearChannel, channels, userProfile} = useFirebaseContext();
 
     const [messages, setMessages] = useState<Message[]>([]);
 
@@ -20,9 +20,8 @@ export default function Feed() {
     }, [messages]);
 
     useEffect(() => {
-        const messages = channels.filter(ch => ch.id === currentChannel)[0]
-            ? channels.filter(ch => ch.id === currentChannel)[0].messages
-            : [];
+        const channelExists = channels.filter(ch => ch.id === currentChannel)[0];
+        const messages = channelExists ? channelExists.messages : [];
         setMessages(messages);
     }, [channels, currentChannel]);
 
@@ -31,13 +30,16 @@ export default function Feed() {
             className="h-100 d-flex flex-column position-relative"
             style={{backgroundColor: "#313338"}}
         >
-            <div
-                className="position-absolute top-0 end-0 m-3 p-2 text-white bg-secondary rounded"
-                onClick={clearChannel}
-                style={{cursor: "pointer"}}
-            >
-                Clear
-            </div>
+            {userProfile && userProfile.roles.includes("moderator") && (
+                <div
+                    className="position-absolute top-0 end-0 m-3 p-2 text-white bg-secondary rounded"
+                    onClick={clearChannel}
+                    style={{cursor: "pointer"}}
+                >
+                    Clear
+                </div>
+            )}
+
             <Container
                 className="pt-3 flex-column overflow-auto"
                 style={{height: "85vh"}}

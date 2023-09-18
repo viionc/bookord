@@ -1,8 +1,10 @@
 import {useEffect, useState} from "react";
 import {useFirebaseContext, UserProfile} from "../context/FirebaseContext";
+import {useModalsContext} from "../context/ModalsContext";
 
 export default function UserList() {
     const {userDatabase} = useFirebaseContext();
+    const {openModal} = useModalsContext();
 
     const [admins, setAdmins] = useState<UserProfile[]>([]);
     const [moderators, setModerators] = useState<UserProfile[]>([]);
@@ -34,7 +36,12 @@ export default function UserList() {
                 <p className="text-secondary m-0 mt-1">Admins ({admins.length}):</p>
                 {admins.map(user => {
                     return (
-                        <h5 className="m-0" key={user.uid} style={{color: "green"}}>
+                        <h5
+                            className="m-0"
+                            key={user.uid}
+                            style={{color: "green"}}
+                            onClick={() => openModal("userprofile", user.uid)}
+                        >
                             {user.displayName}
                         </h5>
                     );
@@ -44,7 +51,12 @@ export default function UserList() {
                 <p className="text-secondary m-0">Moderators ({moderators.length}):</p>
                 {moderators.map(user => {
                     return (
-                        <h5 className="m-0" key={user.uid} style={{color: "yellow"}}>
+                        <h5
+                            className="m-0"
+                            key={user.uid}
+                            style={{color: "yellow"}}
+                            onClick={() => openModal("userprofile", user.uid)}
+                        >
                             {user.displayName}
                         </h5>
                     );
@@ -54,7 +66,12 @@ export default function UserList() {
                 <p className="text-secondary m-0">Members ({members.length}):</p>
                 {members.map(user => {
                     return (
-                        <h5 className="m-0" key={user.uid} style={{color: "white"}}>
+                        <h5
+                            className="m-0"
+                            key={user.uid}
+                            style={{color: "white"}}
+                            onClick={() => openModal("userprofile", user.uid)}
+                        >
                             {user.displayName}
                         </h5>
                     );

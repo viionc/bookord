@@ -31,11 +31,11 @@ export default function LoginModal() {
     };
 
     return (
-        <Modal show={isLoginModalOpen} onHide={handleClose}>
-            <Modal.Header closeButton>
+        <Modal show={isLoginModalOpen} onHide={handleClose} className="text-white">
+            <Modal.Header closeButton className="bg-dark">
                 <Modal.Title>Login:</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="bg-dark">
                 <Form onSubmit={handleSubmit}>
                     <Form.Group>
                         <Form.Label>Email:</Form.Label>
@@ -44,6 +44,7 @@ export default function LoginModal() {
                             placeholder="Enter Email"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
+                            className="bg-secondary"
                         ></Form.Control>
                     </Form.Group>
                     <Form.Group>
@@ -52,12 +53,13 @@ export default function LoginModal() {
                             type="password"
                             placeholder="Enter password"
                             value={password}
+                            className="bg-secondary"
                             onChange={e => setPassword(e.target.value)}
                         ></Form.Control>
                     </Form.Group>
                 </Form>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className="bg-dark">
                 <Button variant="success" onClick={handleLoginButton}>
                     Login
                 </Button>

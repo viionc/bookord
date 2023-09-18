@@ -72,11 +72,11 @@ export default function RegisterModal() {
     };
 
     return (
-        <Modal show={isRegisterModalOpen} onHide={handleClose}>
-            <Modal.Header closeButton>
+        <Modal show={isRegisterModalOpen} onHide={handleClose} className="text-white">
+            <Modal.Header closeButton className="bg-dark">
                 <Modal.Title>Register:</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="bg-dark">
                 <Form onSubmit={handleSubmit}>
                     <Form.Group>
                         <Form.Label>Username:</Form.Label>
@@ -85,6 +85,7 @@ export default function RegisterModal() {
                             placeholder="Enter Username"
                             value={username}
                             onChange={e => setUsername(e.target.value)}
+                            className="bg-secondary"
                         ></Form.Control>
                         {enterUsername && (
                             <Form.Text className="text-danger">Enter an username.</Form.Text>
@@ -97,6 +98,7 @@ export default function RegisterModal() {
                             placeholder="Enter Email"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
+                            className="bg-secondary"
                         ></Form.Control>
                         {enterEmail && (
                             <Form.Text className="text-danger">Enter a valid email.</Form.Text>
@@ -109,6 +111,7 @@ export default function RegisterModal() {
                             placeholder="Enter password"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
+                            className="bg-secondary"
                         ></Form.Control>
                         {enterPassword && (
                             <Form.Text className="text-danger">Enter a password.</Form.Text>
@@ -126,6 +129,7 @@ export default function RegisterModal() {
                             placeholder="Confirm password"
                             value={confirmPassword}
                             onChange={e => handleConfirmPassword(e.target.value)}
+                            className="bg-secondary"
                         ></Form.Control>
                         {mismatchedPassword && (
                             <Form.Text className="text-danger">Passwords must match.</Form.Text>
@@ -133,7 +137,7 @@ export default function RegisterModal() {
                     </Form.Group>
                 </Form>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className="bg-dark">
                 <Button variant="success" onClick={handleRegisterButton}>
                     Register
                 </Button>

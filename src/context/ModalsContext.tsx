@@ -4,11 +4,9 @@ type ModalsContextProps = {
     isLoginModalOpen: boolean;
     isRegisterModalOpen: boolean;
     isAddNewChannelModalOpen: boolean;
-    // openLoginModal: () => void;
-    // openRegisterModal: () => void;
-    // closeLoginModal: () => void;
-    // closeRegisterModal: () => void;
-    openModal: (key: ModalKeys) => void;
+    isUserProfileModalOpen: boolean;
+    profileUidClicked: string;
+    openModal: (key: ModalKeys, profileClicked?: string) => void;
     closeModal: (key: ModalKeys) => void;
 };
 
@@ -22,21 +20,16 @@ type ModalsProviderProps = {
     children: ReactNode;
 };
 
-type ModalKeys = "login" | "register" | "addnewchannel";
+type ModalKeys = "login" | "register" | "addnewchannel" | "userprofile";
 
 export function ModalsProvider({children}: ModalsProviderProps) {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isAddNewChannelModalOpen, setIsAddNewChannelModalOpen] = useState(false);
+    const [isUserProfileModalOpen, setIsUserProfileModalOpen] = useState(false);
+    const [profileUidClicked, setProfileUidClicked] = useState("");
 
-    // const openLoginModal = () => setIsLoginModalOpen(true);
-    // const openRegisterModal = () => setIsRegisterModalOpen(true);
-    // const openAddNewChannelModalModal = () => setIsAddNewChannelModalOpen(true);
-    // const closeLoginModal = () => setIsLoginModalOpen(false);
-    // const closeRegisterModal = () => setIsRegisterModalOpen(false);
-    // const closeAddNewChannelModalModal = () => setIsAddNewChannelModalOpen(false);
-
-    const openModal = (key: ModalKeys) => {
+    const openModal = (key: ModalKeys, profileClicked?: string) => {
         switch (key) {
             case "login":
                 setIsLoginModalOpen(true);
@@ -46,6 +39,10 @@ export function ModalsProvider({children}: ModalsProviderProps) {
                 break;
             case "addnewchannel":
                 setIsAddNewChannelModalOpen(true);
+                break;
+            case "userprofile":
+                setProfileUidClicked(profileClicked as string);
+                setIsUserProfileModalOpen(true);
                 break;
         }
     };
@@ -61,6 +58,9 @@ export function ModalsProvider({children}: ModalsProviderProps) {
             case "addnewchannel":
                 setIsAddNewChannelModalOpen(false);
                 break;
+            case "userprofile":
+                setIsUserProfileModalOpen(false);
+                break;
         }
     };
 
@@ -70,14 +70,10 @@ export function ModalsProvider({children}: ModalsProviderProps) {
                 isLoginModalOpen,
                 isRegisterModalOpen,
                 isAddNewChannelModalOpen,
+                isUserProfileModalOpen,
+                profileUidClicked,
                 openModal,
                 closeModal,
-                // openLoginModal,
-                // openRegisterModal,
-                // closeLoginModal,
-                // closeRegisterModal,
-                // openAddNewChannelModalModal,
-                // closeAddNewChannelModalModal
             }}
         >
             {children}

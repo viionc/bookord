@@ -5,7 +5,8 @@ import {useEffect, useState} from "react";
 import NewMessageInput from "./NewMessageInput";
 
 export default function Feed() {
-    const {currentChannel, clearChannel, channels, userProfile} = useFirebaseContext();
+    const {currentChannel, clearChannel, channels, currentUserProfile, userDatabase} =
+        useFirebaseContext();
 
     const [messages, setMessages] = useState<Message[]>([]);
 
@@ -23,14 +24,14 @@ export default function Feed() {
         const channelExists = channels.filter(ch => ch.id === currentChannel)[0];
         const messages = channelExists ? channelExists.messages : [];
         setMessages(messages);
-    }, [channels, currentChannel]);
+    }, [channels, currentChannel, userDatabase]);
 
     return (
         <Container
-            className="h-100 d-flex flex-column position-relative"
+            className="h-100 d-flex flex-column position-relative pt-4"
             style={{backgroundColor: "#313338"}}
         >
-            {userProfile && userProfile.roles.includes("moderator") && (
+            {currentUserProfile && currentUserProfile.roles.includes("moderator") && (
                 <div
                     className="position-absolute top-0 end-0 m-3 p-2 text-white bg-secondary rounded"
                     onClick={clearChannel}

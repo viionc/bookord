@@ -5,6 +5,7 @@ import LoginModal from "./components/LoginModal";
 import RegisterModal from "./components/RegisterModal";
 import PageContent from "./components/PageContent";
 import AddNewChannelModal from "./components/AddNewChannelModal";
+import UserProfileModal from "./components/UserProfileModal";
 
 function App() {
     return (
@@ -15,6 +16,7 @@ function App() {
                 <LoginModal></LoginModal>
                 <RegisterModal></RegisterModal>
                 <AddNewChannelModal></AddNewChannelModal>
+                <UserProfileModal></UserProfileModal>
             </ModalsProvider>
         </FirebaseProvider>
     );

@@ -32,3 +32,7 @@ body {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     background-color: #1a1a1a;
 }
+
+.modal-content {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}

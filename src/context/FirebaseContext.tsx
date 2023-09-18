@@ -18,6 +18,7 @@ import {
     updateDoc,
     onSnapshot,
     query,
+    increment,
 } from "firebase/firestore";
 import {v4 as uuid} from "uuid";
 
@@ -45,9 +46,11 @@ type FirebaseContextProps = {
     likeMessage: (message: Message) => void;
     updateCurrentChannel: (messages: Message[]) => void;
     removeLikeMessage: (messages: Message) => void;
-    userProfile: UserProfile | null;
+    currentUserProfile: UserProfile | null;
     userDatabase: UserProfile[];
     dataLoaded: boolean;
+    addUserToFriends: (userUid: string) => void;
+    removeUserFromFriends: (userUid: string) => void;
 };
 
 export type UserProfile = {
@@ -55,6 +58,10 @@ export type UserProfile = {
     uid: string;
     photoURL: string | null;
     roles: UserRole[];
+    createdAt: number;
+    totalMessagesSent: number;
+    friends: string[];
+    ignored: string[];
 };
 
 export type UserRole = "member" | "moderator" | "admin";
@@ -96,8 +103,22 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
     const [currentChannel, setCurrentChannel] = useState<string>("general");
     const [userDatabase, setUserDatabase] = useState<UserProfile[]>([]);
     const [channels, setChannels] = useState<Channel[]>([]);
-    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [currentUserProfile, setcurrentUserProfile] = useState<UserProfile | null>(null);
     const [dataLoaded, setDataLoaded] = useState(false);
+
+    useEffect(() => {
+        const observer = auth.onAuthStateChanged(user => {
+            if (user) {
+                setCurrentUser(user);
+                getUsersFromDatabase();
+                getMessages();
+            } else {
+                setCurrentUser(null);
+                setChannels([]);
+            }
+        });
+        return observer;
+    }, [currentUser]);
 
     useEffect(() => {
         if (!currentUser) return;
@@ -107,6 +128,8 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             let users: UserProfile[] = [];
             querySnapshot.forEach(doc => users.push(doc.data() as UserProfile));
             setUserDatabase(users);
+            let profile = users.filter(user => user.uid === currentUser.uid)[0];
+            setcurrentUserProfile(profile);
         });
         return unsubscribe;
     }, [currentUser]);
@@ -129,7 +152,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                     displayName: username,
                 })
                     .then(() => setCurrentUser(userCredential.user))
-                    .then(() => addUserToDatabase(createUserProfile(userCredential.user)));
+                    .then(() => addUserToDatabase(createcurrentUserProfile(userCredential.user)));
             })
             .catch(error => {
                 const errorCode = error.code;
@@ -159,12 +182,16 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             });
     };
 
-    const createUserProfile = (user: User): UserProfile => {
+    const createcurrentUserProfile = (user: User): UserProfile => {
         const profile: UserProfile = {
             displayName: user.displayName || "",
             uid: user.uid,
             roles: ["member"],
             photoURL: user.photoURL,
+            createdAt: Date.now(),
+            totalMessagesSent: 0,
+            friends: [],
+            ignored: [],
         };
         return profile;
     };
@@ -221,7 +248,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             })
             .then(users => {
                 let profile = users.filter(user => user.uid === currentUser.uid)[0];
-                setUserProfile(profile);
+                setcurrentUserProfile(profile);
             });
     }
 
@@ -253,6 +280,10 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             messages: arrayUnion({
                 ...message,
             }),
+        }).then(() => {
+            updateDoc(doc(db, "users", currentUser.uid), {
+                totalMessagesSent: increment(1),
+            });
         });
     };
 
@@ -282,6 +313,23 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         });
     };
 
+    const addUserToFriends = (userUid: string) => {
+        if (!currentUser || !currentUserProfile) return;
+        const friends = [...currentUserProfile.friends];
+        friends.push(userUid);
+        updateDoc(doc(db, "users", currentUser.uid), {
+            friends: friends,
+        });
+    };
+
+    const removeUserFromFriends = (userUid: string) => {
+        if (!currentUser || !currentUserProfile) return;
+        let friends = currentUserProfile.friends.filter(e => e !== userUid);
+        updateDoc(doc(db, "users", currentUser.uid), {
+            friends: friends,
+        });
+    };
+
     const clearChannel = () => {
         if (!currentUser) return;
         updateDoc(doc(db, "channels", currentChannel), {
@@ -300,20 +348,6 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         );
     };
 
-    useEffect(() => {
-        const observer = auth.onAuthStateChanged(user => {
-            if (user) {
-                setCurrentUser(user);
-                getUsersFromDatabase();
-                getMessages();
-            } else {
-                setCurrentUser(null);
-                setChannels([]);
-            }
-        });
-        return observer;
-    }, [currentUser]);
-
     return (
         <FirebaseContext.Provider
             value={{
@@ -330,9 +364,11 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 likeMessage,
                 updateCurrentChannel,
                 removeLikeMessage,
-                userProfile,
+                currentUserProfile,
                 userDatabase,
                 dataLoaded,
+                addUserToFriends,
+                removeUserFromFriends,
             }}
         >
             {children}

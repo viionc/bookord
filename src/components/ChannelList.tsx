@@ -5,7 +5,7 @@ import {useModalsContext} from "../context/ModalsContext";
 // import {useEffect, useState} from "react";
 
 export default function ChannelList() {
-    const {channels, currentChannel, changeChannel, userProfile} = useFirebaseContext();
+    const {channels, currentChannel, changeChannel, currentUserProfile} = useFirebaseContext();
     const {openModal} = useModalsContext();
     // const [show, setShow] = useState(true);
     // const [width, setWidth] = useState(window.innerWidth);
@@ -43,7 +43,10 @@ export default function ChannelList() {
                     </span>
                 </div>
                 {channels.map(channel => {
-                    if (channel.id === "moderator" && userProfile?.roles.includes("moderator"))
+                    if (
+                        channel.id === "moderator" &&
+                        currentUserProfile?.roles.includes("moderator")
+                    )
                         return (
                             <h5
                                 key={channel.id}

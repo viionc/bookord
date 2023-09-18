@@ -43,10 +43,12 @@ export default function UserList() {
                 {admins.map(user => {
                     return (
                         <h5
-                            className="m-0"
+                            className="m-0 hover"
                             key={user.uid}
                             style={{color: "green"}}
-                            onClick={() => openModal("userprofile", user.uid)}
+                            onClick={() =>
+                                openModal({key: "userprofile", profileClicked: user.uid})
+                            }
                         >
                             {user.displayName}
                         </h5>
@@ -58,10 +60,12 @@ export default function UserList() {
                 {moderators.map(user => {
                     return (
                         <h5
-                            className="m-0"
+                            className="m-0 hover"
                             key={user.uid}
                             style={{color: "yellow"}}
-                            onClick={() => openModal("userprofile", user.uid)}
+                            onClick={() =>
+                                openModal({key: "userprofile", profileClicked: user.uid})
+                            }
                         >
                             {user.displayName}
                         </h5>
@@ -73,10 +77,12 @@ export default function UserList() {
                 {friends.map(user => {
                     return (
                         <h5
-                            className="m-0"
+                            className="m-0 hover"
                             key={user.uid}
                             style={{color: "white"}}
-                            onClick={() => openModal("userprofile", user.uid)}
+                            onClick={() =>
+                                openModal({key: "userprofile", profileClicked: user.uid})
+                            }
                         >
                             {user.displayName}
                         </h5>
@@ -88,10 +94,12 @@ export default function UserList() {
                 {members.map(user => {
                     return (
                         <h5
-                            className="m-0"
+                            className="m-0 hover"
                             key={user.uid}
                             style={{color: "white"}}
-                            onClick={() => openModal("userprofile", user.uid)}
+                            onClick={() =>
+                                openModal({key: "userprofile", profileClicked: user.uid})
+                            }
                         >
                             {user.displayName}
                         </h5>

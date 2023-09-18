@@ -1,21 +1,16 @@
 import {Container} from "react-bootstrap";
 import {Channel, useFirebaseContext} from "../context/FirebaseContext";
-import styles from "./ChannelList.module.css";
 import {useModalsContext} from "../context/ModalsContext";
-// import {useEffect, useState} from "react";
+import ChannelComponent from "./ChannelComponent";
 
 export default function ChannelList() {
-    const {channels, currentChannel, changeChannel, currentUserProfile} = useFirebaseContext();
+    const {channels, currentUserProfile} = useFirebaseContext();
     const {openModal} = useModalsContext();
     // const [show, setShow] = useState(true);
     // const [width, setWidth] = useState(window.innerWidth);
 
     const handleAddChannel = () => {
-        openModal("addnewchannel");
-    };
-    const handleChannelClicked = (channel: Channel) => {
-        if (channel.id === currentChannel) return;
-        changeChannel(channel.id);
+        openModal({key: "addnewchannel"});
     };
 
     const checkIfUserCanSeeChannel = (channel: Channel) => {
@@ -52,47 +47,17 @@ export default function ChannelList() {
                         channel.id === "moderator" &&
                         currentUserProfile?.roles.includes("moderator")
                     )
-                        return (
-                            <h5
-                                key={channel.id}
-                                className={`rounded ${
-                                    channel.id === currentChannel ? styles.active : styles.inactive
-                                }`}
-                                onClick={() => handleChannelClicked(channel)}
-                            >
-                                #{channel.name}
-                            </h5>
-                        );
+                        return <ChannelComponent key={channel.id} {...channel}></ChannelComponent>;
                 })}
                 {channels.map(channel => {
-                    if (channel.id === "general")
-                        return (
-                            <h5
-                                key={channel.id}
-                                className={`rounded ${
-                                    channel.id === currentChannel ? styles.active : styles.inactive
-                                }`}
-                                onClick={() => handleChannelClicked(channel)}
-                            >
-                                #{channel.name}
-                            </h5>
-                        );
+                    if (currentUserProfile && channel.id === "general")
+                        return <ChannelComponent key={channel.id} {...channel}></ChannelComponent>;
                 })}
 
                 {channels.map(channel => {
                     if (channel.id === "general" || channel.id === "moderator") return;
-                    if (checkIfUserCanSeeChannel(channel)) {
-                        return (
-                            <h5
-                                key={channel.id}
-                                className={`rounded ${
-                                    channel.id === currentChannel ? styles.active : styles.inactive
-                                }`}
-                                onClick={() => handleChannelClicked(channel)}
-                            >
-                                #{channel.name}
-                            </h5>
-                        );
+                    if (currentUserProfile && checkIfUserCanSeeChannel(channel)) {
+                        return <ChannelComponent key={channel.id} {...channel}></ChannelComponent>;
                     }
                 })}
             </Container>

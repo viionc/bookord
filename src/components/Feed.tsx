@@ -33,7 +33,7 @@ export default function Feed() {
         >
             {currentUserProfile && currentUserProfile.roles.includes("moderator") && (
                 <div
-                    className="position-absolute top-0 end-0 m-3 p-2 text-white bg-secondary rounded"
+                    className="position-absolute top-0 end-0 m-3 p-2 text-white bg-secondary rounded hover"
                     onClick={clearChannel}
                     style={{cursor: "pointer"}}
                 >

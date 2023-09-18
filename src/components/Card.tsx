@@ -19,8 +19,9 @@ const Card: React.FC<Message> = (message: Message) => {
         <Container className="mt-2 d-flex pt flex-column text-white">
             <div className="d-flex jutify-content-center align-items-center gap-2">
                 <h3
-                    onClick={() => openModal("userprofile", message.userUid)}
-                    style={{color: usernameColor}}
+                    onClick={() => openModal({key: "userprofile", profileClicked: message.userUid})}
+                    style={{color: usernameColor, cursor: "pointer"}}
+                    className="hover"
                 >
                     {message.username}
                 </h3>

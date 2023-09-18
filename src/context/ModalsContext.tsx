@@ -1,13 +1,16 @@
 import {ReactNode, createContext, useContext, useState} from "react";
+import {Channel} from "./FirebaseContext";
 
 type ModalsContextProps = {
     isLoginModalOpen: boolean;
     isRegisterModalOpen: boolean;
     isAddNewChannelModalOpen: boolean;
     isUserProfileModalOpen: boolean;
+    isChannelSettingsModalOpen: boolean;
     profileUidClicked: string;
-    openModal: (key: ModalKeys, profileClicked?: string) => void;
-    closeModal: (key: ModalKeys) => void;
+    channelClicked: Channel;
+    openModal: ({}: ModalSettings) => void;
+    closeModal: ({}: ModalSettings) => void;
 };
 
 const ModalsContext = createContext({} as ModalsContextProps);
@@ -20,16 +23,24 @@ type ModalsProviderProps = {
     children: ReactNode;
 };
 
-type ModalKeys = "login" | "register" | "addnewchannel" | "userprofile";
+type ModalSettings = {
+    key: ModalKeys;
+    channel?: Channel;
+    profileClicked?: string;
+};
+
+type ModalKeys = "login" | "register" | "addnewchannel" | "userprofile" | "channelsettings";
 
 export function ModalsProvider({children}: ModalsProviderProps) {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isAddNewChannelModalOpen, setIsAddNewChannelModalOpen] = useState(false);
     const [isUserProfileModalOpen, setIsUserProfileModalOpen] = useState(false);
+    const [isChannelSettingsModalOpen, setIsChannelSettingsModalOpen] = useState(false);
     const [profileUidClicked, setProfileUidClicked] = useState("");
+    const [channelClicked, setChannelClicked] = useState<Channel>({} as Channel);
 
-    const openModal = (key: ModalKeys, profileClicked?: string) => {
+    const openModal = ({key, profileClicked, channel}: ModalSettings) => {
         switch (key) {
             case "login":
                 setIsLoginModalOpen(true);
@@ -44,10 +55,14 @@ export function ModalsProvider({children}: ModalsProviderProps) {
                 setProfileUidClicked(profileClicked as string);
                 setIsUserProfileModalOpen(true);
                 break;
+            case "channelsettings":
+                setChannelClicked(channel as Channel);
+                setIsChannelSettingsModalOpen(true);
+                break;
         }
     };
 
-    const closeModal = (key: ModalKeys) => {
+    const closeModal = ({key}: ModalSettings) => {
         switch (key) {
             case "login":
                 setIsLoginModalOpen(false);
@@ -61,6 +76,9 @@ export function ModalsProvider({children}: ModalsProviderProps) {
             case "userprofile":
                 setIsUserProfileModalOpen(false);
                 break;
+            case "channelsettings":
+                setIsChannelSettingsModalOpen(false);
+                break;
         }
     };
 
@@ -71,7 +89,9 @@ export function ModalsProvider({children}: ModalsProviderProps) {
                 isRegisterModalOpen,
                 isAddNewChannelModalOpen,
                 isUserProfileModalOpen,
+                isChannelSettingsModalOpen,
                 profileUidClicked,
+                channelClicked,
                 openModal,
                 closeModal,
             }}

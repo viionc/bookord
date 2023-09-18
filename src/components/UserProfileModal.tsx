@@ -12,7 +12,7 @@ export default function UserProfileModal() {
     const [usernameColor, setUsernameColor] = useState("white");
 
     const handleClose = () => {
-        closeModal("userprofile");
+        closeModal({key: "userprofile"});
     };
 
     const handleAddToFriends = () => {

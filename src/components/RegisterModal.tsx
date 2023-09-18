@@ -13,9 +13,10 @@ export default function RegisterModal() {
     const [enterUsername, setEnterUsername] = useState(false);
     const [enterPassword, setEnterPassword] = useState(false);
     const [passwordTooShort, setPasswordTooShort] = useState(false);
+    const [nameAlreadyExists, setNameAlreadyExists] = useState(false);
 
     const {isRegisterModalOpen, closeModal} = useModalsContext();
-    const {registerUser} = useFirebaseContext();
+    const {registerUser, userDatabase} = useFirebaseContext();
 
     const handleConfirmPassword = (pass: string) => {
         setConfirmPassword(pass);
@@ -27,7 +28,7 @@ export default function RegisterModal() {
     };
 
     const handleClose = () => {
-        closeModal("register");
+        closeModal({key: "register"});
     };
 
     const handleRegisterButton = () => {
@@ -38,6 +39,9 @@ export default function RegisterModal() {
             failed = true;
         } else {
             setEnterUsername(false);
+        }
+        if (userDatabase.filter(user => user.displayName === username).length) {
+            setNameAlreadyExists(true);
         }
         if (email === "" || !email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
             setEnterEmail(true);
@@ -73,7 +77,7 @@ export default function RegisterModal() {
 
     return (
         <Modal show={isRegisterModalOpen} onHide={handleClose} className="text-white">
-            <Modal.Header closeButton className="bg-dark">
+            <Modal.Header closeButton closeVariant="white" className="bg-dark">
                 <Modal.Title>Register:</Modal.Title>
             </Modal.Header>
             <Modal.Body className="bg-dark">
@@ -85,10 +89,13 @@ export default function RegisterModal() {
                             placeholder="Enter Username"
                             value={username}
                             onChange={e => setUsername(e.target.value)}
-                            className="bg-secondary"
+                            className="bg-secondary border-0"
                         ></Form.Control>
                         {enterUsername && (
                             <Form.Text className="text-danger">Enter an username.</Form.Text>
+                        )}
+                        {nameAlreadyExists && (
+                            <Form.Text className="text-danger">Username taken.</Form.Text>
                         )}
                     </Form.Group>
                     <Form.Group>
@@ -98,7 +105,7 @@ export default function RegisterModal() {
                             placeholder="Enter Email"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            className="bg-secondary"
+                            className="bg-secondary border-0"
                         ></Form.Control>
                         {enterEmail && (
                             <Form.Text className="text-danger">Enter a valid email.</Form.Text>
@@ -111,7 +118,7 @@ export default function RegisterModal() {
                             placeholder="Enter password"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
-                            className="bg-secondary"
+                            className="bg-secondary border-0"
                         ></Form.Control>
                         {enterPassword && (
                             <Form.Text className="text-danger">Enter a password.</Form.Text>
@@ -129,7 +136,7 @@ export default function RegisterModal() {
                             placeholder="Confirm password"
                             value={confirmPassword}
                             onChange={e => handleConfirmPassword(e.target.value)}
-                            className="bg-secondary"
+                            className="bg-secondary border-0"
                         ></Form.Control>
                         {mismatchedPassword && (
                             <Form.Text className="text-danger">Passwords must match.</Form.Text>

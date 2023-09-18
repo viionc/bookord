@@ -44,13 +44,19 @@ type FirebaseContextProps = {
     changeChannel: (name: string) => void;
     clearChannel: () => void;
     likeMessage: (message: Message) => void;
-    updateCurrentChannel: (messages: Message[]) => void;
     removeLikeMessage: (messages: Message) => void;
     currentUserProfile: UserProfile | null;
     userDatabase: UserProfile[];
     dataLoaded: boolean;
     addUserToFriends: (userUid: string) => void;
     removeUserFromFriends: (userUid: string) => void;
+    getUserByUid: (userUid: string) => UserProfile;
+    saveChannelSettings: (
+        channelName: string,
+        members: string[],
+        isPrivate: boolean,
+        clickedChannelId: Channel
+    ) => void;
 };
 
 export type UserProfile = {
@@ -107,19 +113,23 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
     const [currentUserProfile, setcurrentUserProfile] = useState<UserProfile | null>(null);
     const [dataLoaded, setDataLoaded] = useState(false);
 
+    var debounceTimeout: any;
+    const DebounceDueTime = 500;
+
     useEffect(() => {
         const observer = auth.onAuthStateChanged(user => {
-            if (user) {
-                setCurrentUser(user);
-                getUsersFromDatabase();
-                getMessages();
-            } else {
-                setCurrentUser(null);
-                setChannels([]);
-            }
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                debounceTimeout = null;
+                if (user) {
+                    console.log("user logged in", new Date(Date.now()));
+                    setCurrentUser(user);
+                    loadDataFromDatabase(user);
+                }
+            }, DebounceDueTime);
         });
         return observer;
-    }, [currentUser]);
+    }, []);
 
     useEffect(() => {
         if (!currentUser) return;
@@ -137,23 +147,66 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
 
     useEffect(() => {
         if (!currentUser) return;
-        const unsubscribe = onSnapshot(doc(db, "channels", currentChannel), doc => {
-            console.log("channel data from database fetched");
-            if (doc.exists()) {
-                updateCurrentChannel(doc.data().messages as Message[]);
-            }
+        // const unsubscribe = onSnapshot(doc(db, "channels", currentChannel), doc => {
+        //     console.log("channel data from database fetched");
+        //     if (doc.exists()) {
+        //         updateCurrentChannel(doc.data().messages as Message[]);
+        //     }
+        // });
+        let q = query(collection(db, "channels"));
+        const unsubscribe = onSnapshot(q, querySnapshot => {
+            console.log("channels data from database fetched");
+            let newChannels: Channel[] = [];
+            querySnapshot.forEach(doc => newChannels.push({id: doc.id, ...doc.data()} as Channel));
+            setChannels(newChannels);
         });
         return unsubscribe;
-    }, [currentChannel, currentUser]);
+    }, [currentUser]);
+
+    function loadDataFromDatabase(user: User) {
+        if (!user) return;
+        const usersArray = [] as any[];
+        const channelsArray = [] as any[];
+        let channelsdb = getDocs(collection(db, "channels"))
+            .then(data => {
+                data.docs.forEach(doc => {
+                    channelsArray.push({
+                        id: doc.id,
+                        ...doc.data(),
+                    } as Channel);
+                });
+            })
+            .then(() => {
+                setChannels(channelsArray);
+            });
+        let userdb = getDocs(collection(db, "users"))
+            .then(data => {
+                data.docs.forEach(doc => {
+                    usersArray.push({...doc.data()});
+                });
+            })
+            .then(() => {
+                setUserDatabase(usersArray);
+            })
+            .then(() => {
+                let profile = usersArray.filter(user => user.uid === user.uid)[0];
+                setcurrentUserProfile(profile);
+            });
+
+        Promise.all([userdb, channelsdb]).then(() => {
+            setDataLoaded(true);
+        });
+    }
 
     const registerUser = (email: string, password: string, username: string) => {
         createUserWithEmailAndPassword(auth, email, password)
             .then(userCredential => {
+                console.log("user created", new Date(Date.now()));
                 updateProfile(userCredential.user, {
                     displayName: username,
                 })
                     .then(() => setCurrentUser(userCredential.user))
-                    .then(() => addUserToDatabase(createcurrentUserProfile(userCredential.user)));
+                    .then(() => addUserToDatabase(createCurrentUserProfile(userCredential.user)));
             })
             .catch(error => {
                 const errorCode = error.code;
@@ -163,19 +216,24 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
     };
 
     const loginUser = (email: string, password: string): void | null => {
-        signInWithEmailAndPassword(auth, email, password)
-            .then(userCredential => setCurrentUser(userCredential.user))
-            .catch(error => {
-                // const errorCode = error.code;
-                const errorMessage = error.message;
-                alert(errorMessage);
-            });
+        signInWithEmailAndPassword(auth, email, password).catch(error => {
+            // const errorCode = error.code;
+            const errorMessage = error.message;
+            alert(errorMessage);
+        });
     };
 
     const logoutUser = () => {
         if (!currentUser) return;
         signOut(auth)
             .then(() => {
+                location.reload();
+                setCurrentUser(null);
+                setChannels([]);
+                setDataLoaded(false);
+                setCurrentChannel("general");
+                setcurrentUserProfile(null);
+                setUserDatabase([]);
                 console.log("logged out");
             })
             .catch(error => {
@@ -183,7 +241,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             });
     };
 
-    const createcurrentUserProfile = (user: User): UserProfile => {
+    const createCurrentUserProfile = (user: User): UserProfile => {
         const profile: UserProfile = {
             displayName: user.displayName || "",
             uid: user.uid,
@@ -205,9 +263,9 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
     //     return auth.currentUser;
     // };
 
-    // const getUserByUID = (uid: number) => {
-    //     return;
-    // };
+    const getUserByUid = (userUid: string): UserProfile => {
+        return userDatabase.filter(u => u.uid === userUid)[0];
+    };
 
     const changeChannel = (id: string) => {
         setCurrentChannel(id);
@@ -231,49 +289,49 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         };
         setDoc(doc(db, "channels", id), {
             ...newChannel,
-        }).then(() => getMessages());
+        });
     }
 
-    function getUsersFromDatabase() {
-        if (!currentUser) return;
-        const users = [] as any[];
-        getDocs(collection(db, "users"))
-            .then(data => {
-                data.docs.forEach(doc => {
-                    users.push({...doc.data()});
-                });
-                return users;
-            })
-            .then(users => {
-                setUserDatabase(users);
-                return users;
-            })
-            .then(users => {
-                let profile = users.filter(user => user.uid === currentUser.uid)[0];
-                setcurrentUserProfile(profile);
-            });
-    }
+    // function getUsersFromDatabase() {
+    //     if (!currentUser) return;
+    //     const users = [] as any[];
+    //     getDocs(collection(db, "users"))
+    //         .then(data => {
+    //             data.docs.forEach(doc => {
+    //                 users.push({...doc.data()});
+    //             });
+    //             return users;
+    //         })
+    //         .then(users => {
+    //             setUserDatabase(users);
+    //             return users;
+    //         })
+    //         .then(users => {
+    //             let profile = users.filter(user => user.uid === currentUser.uid)[0];
+    //             setcurrentUserProfile(profile);
+    //         });
+    // }
 
-    function getMessages() {
-        if (!currentUser) return;
-        const channels: Channel[] = [];
-        getDocs(collection(db, "channels"))
-            .then(data => {
-                data.docs.forEach(doc => {
-                    channels.push({
-                        id: doc.id,
-                        ...doc.data(),
-                    } as Channel);
-                });
-            })
-            .then(() => {
-                setChannels(channels);
-            })
-            .then(() => setDataLoaded(true));
-        // .then(() => {
-        //     setCurrentChannel(channels.filter(e => e.id === "general")[0]);
-        // });
-    }
+    // function getMessages() {
+    //     if (!currentUser) return;
+    //     const channels: Channel[] = [];
+    //     getDocs(collection(db, "channels"))
+    //         .then(data => {
+    //             data.docs.forEach(doc => {
+    //                 channels.push({
+    //                     id: doc.id,
+    //                     ...doc.data(),
+    //                 } as Channel);
+    //             });
+    //         })
+    //         .then(() => {
+    //             setChannels(channels);
+    //         })
+    //         .then(() => setDataLoaded(true));
+    // .then(() => {
+    //     setCurrentChannel(channels.filter(e => e.id === "general")[0]);
+    // });
+    // }
 
     const sendMessage = (message: Message) => {
         if (!currentUser) return;
@@ -338,17 +396,35 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             messages: [],
         });
     };
-    const updateCurrentChannel = (messages: Message[]) => {
+
+    const saveChannelSettings = (
+        name: string,
+        members: string[],
+        isPrivate: boolean,
+        clickedChannel: Channel
+    ) => {
         if (!currentUser) return;
-        setChannels(prevChannels =>
-            prevChannels.map(ch => {
-                if (ch.id === currentChannel) {
-                    ch.messages = messages;
-                }
-                return ch;
-            })
-        );
+        setDoc(doc(db, "channels", clickedChannel.id), {
+            ...clickedChannel,
+            name,
+            members,
+            isPrivate,
+        });
     };
+
+    // const updateCurrentChannel = (messages: Message[]) => {
+    //     if (!currentUser) return;
+    //     let newChannels = [...channels].map();
+
+    //     setChannels(prevChannels =>
+    //         prevChannels.map(ch => {
+    //             if (ch.id === currentChannel) {
+    //                 ch.messages = messages;
+    //             }
+    //             return ch;
+    //         })
+    //     );
+    // };
 
     return (
         <FirebaseContext.Provider
@@ -364,13 +440,14 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 changeChannel,
                 clearChannel,
                 likeMessage,
-                updateCurrentChannel,
                 removeLikeMessage,
                 currentUserProfile,
                 userDatabase,
                 dataLoaded,
                 addUserToFriends,
                 removeUserFromFriends,
+                getUserByUid,
+                saveChannelSettings,
             }}
         >
             {children}

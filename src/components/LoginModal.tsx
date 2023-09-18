@@ -11,28 +11,28 @@ export default function LoginModal() {
     const {loginUser} = useFirebaseContext();
 
     const handleRegisterButton = () => {
-        closeModal("login");
-        openModal("register");
+        closeModal({key: "login"});
+        openModal({key: "register"});
     };
 
     const handleClose = () => {
-        closeModal("login");
+        closeModal({key: "login"});
     };
 
     const handleLoginButton = () => {
         loginUser(email, password);
-        closeModal("login");
+        closeModal({key: "login"});
     };
 
     const handleSubmit = (e: FormEvent) => {
-        console.log("tst");
+        console.log(email, password);
         e.preventDefault();
         handleLoginButton();
     };
 
     return (
         <Modal show={isLoginModalOpen} onHide={handleClose} className="text-white">
-            <Modal.Header closeButton className="bg-dark">
+            <Modal.Header closeButton closeVariant="white" className="bg-dark">
                 <Modal.Title>Login:</Modal.Title>
             </Modal.Header>
             <Modal.Body className="bg-dark">
@@ -44,7 +44,7 @@ export default function LoginModal() {
                             placeholder="Enter Email"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            className="bg-secondary"
+                            className="bg-secondary border-0"
                         ></Form.Control>
                     </Form.Group>
                     <Form.Group>
@@ -53,14 +53,14 @@ export default function LoginModal() {
                             type="password"
                             placeholder="Enter password"
                             value={password}
-                            className="bg-secondary"
+                            className="bg-secondary border-0"
                             onChange={e => setPassword(e.target.value)}
                         ></Form.Control>
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer className="bg-dark">
-                <Button variant="success" onClick={handleLoginButton}>
+                <Button variant="success" onClick={handleLoginButton} type="submit">
                     Login
                 </Button>
                 <Button variant="danger" onClick={handleRegisterButton}>

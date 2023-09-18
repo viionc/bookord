@@ -11,12 +11,19 @@ export default function AddNewChannelModal() {
     const {addNewChannel} = useFirebaseContext();
 
     const handleAddNewChannel = () => {
-        closeModal("addnewchannel");
+        closeModal({key: "addnewchannel"});
         addNewChannel(channelName, isChannelPrivate);
     };
 
+    const handleChannelNameChange = (e: any) => {
+        if (e.target.value.length === 11) {
+            return;
+        }
+        setChannelName(e.target.value);
+    };
+
     const handleClose = () => {
-        closeModal("addnewchannel");
+        closeModal({key: "addnewchannel"});
     };
 
     const handlePrivateChannelSwitch = () => {
@@ -36,9 +43,14 @@ export default function AddNewChannelModal() {
                             type="name"
                             placeholder="Enter channel name"
                             value={channelName}
-                            onChange={e => setChannelName(e.target.value)}
+                            onChange={e => handleChannelNameChange(e)}
                             className="bg-secondary text-white border-0"
                         ></Form.Control>
+                        {channelName.length === 10 && (
+                            <Form.Text className="text-danger">
+                                Channel names can be only 10 characters long.
+                            </Form.Text>
+                        )}
                         <Form.Check
                             className="mt-3"
                             type="switch"

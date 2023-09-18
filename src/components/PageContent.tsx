@@ -1,7 +1,10 @@
 import {useFirebaseContext} from "../context/FirebaseContext";
+import AddNewChannelModal from "./AddNewChannelModal";
 import ChannelList from "./ChannelList";
+import ChannelSettingsModal from "./ChannelSettingsModal";
 import Feed from "./Feed";
 import UserList from "./UserList";
+import UserProfileModal from "./UserProfileModal";
 
 export default function PageContent() {
     const {currentUser, dataLoaded} = useFirebaseContext();
@@ -13,6 +16,9 @@ export default function PageContent() {
                         <ChannelList></ChannelList>
                         <Feed></Feed>
                         <UserList></UserList>
+                        <AddNewChannelModal></AddNewChannelModal>
+                        <UserProfileModal></UserProfileModal>
+                        <ChannelSettingsModal></ChannelSettingsModal>
                     </>
                 ) : (
                     <div

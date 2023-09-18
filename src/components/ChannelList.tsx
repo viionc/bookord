@@ -18,6 +18,18 @@ export default function ChannelList() {
         changeChannel(channel.id);
     };
 
+    const checkIfUserCanSeeChannel = (channel: Channel) => {
+        if (!currentUserProfile) return false;
+        if (!channel.isPrivate) return true;
+        if (
+            currentUserProfile?.roles.includes("moderator") ||
+            currentUserProfile?.roles.includes("admin")
+        ) {
+            return true;
+        } else if (channel.members.includes(currentUserProfile.uid)) {
+            return true;
+        }
+    };
     // const handleShow = () => {
     //     setShow(prev => (prev = !prev));
     // };
@@ -76,17 +88,19 @@ export default function ChannelList() {
 
                 {channels.map(channel => {
                     if (channel.id === "general" || channel.id === "moderator") return;
-                    return (
-                        <h5
-                            key={channel.id}
-                            className={`rounded ${
-                                channel.id === currentChannel ? styles.active : styles.inactive
-                            }`}
-                            onClick={() => handleChannelClicked(channel)}
-                        >
-                            #{channel.name}
-                        </h5>
-                    );
+                    if (checkIfUserCanSeeChannel(channel)) {
+                        return (
+                            <h5
+                                key={channel.id}
+                                className={`rounded ${
+                                    channel.id === currentChannel ? styles.active : styles.inactive
+                                }`}
+                                onClick={() => handleChannelClicked(channel)}
+                            >
+                                #{channel.name}
+                            </h5>
+                        );
+                    }
                 })}
             </Container>
         </div>

@@ -40,7 +40,7 @@ type FirebaseContextProps = {
     sendMessage: (message: Message) => void;
     currentChannel: string;
     channels: Channel[];
-    addNewChannel: (name: string) => void;
+    addNewChannel: (name: string, isPrivate: boolean) => void;
     changeChannel: (name: string) => void;
     clearChannel: () => void;
     likeMessage: (message: Message) => void;
@@ -73,6 +73,7 @@ export type Channel = {
     messages: Message[];
     role: UserRole;
     members: string[];
+    isPrivate: boolean;
 };
 export type Message = {
     username: string;
@@ -216,11 +217,12 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         setDoc(doc(db, "users", user.uid), user);
     }
 
-    function addNewChannel(name: string) {
+    function addNewChannel(name: string, isPrivate: boolean) {
         if (!currentUser) return;
         const id = uuid();
         const newChannel: Channel = {
             id: id,
+            isPrivate: isPrivate,
             name: name,
             owner: currentUser?.uid as string,
             role: "member",

@@ -6,24 +6,29 @@ import {useFirebaseContext} from "../context/FirebaseContext";
 
 export default function AddNewChannelModal() {
     const [channelName, setChannelName] = useState("");
+    const [isChannelPrivate, setIsChannelPrivate] = useState(false);
     const {isAddNewChannelModalOpen, closeModal} = useModalsContext();
     const {addNewChannel} = useFirebaseContext();
 
     const handleAddNewChannel = () => {
         closeModal("addnewchannel");
-        addNewChannel(channelName);
+        addNewChannel(channelName, isChannelPrivate);
     };
 
     const handleClose = () => {
         closeModal("addnewchannel");
     };
 
+    const handlePrivateChannelSwitch = () => {
+        setIsChannelPrivate(!isChannelPrivate);
+    };
+
     return (
-        <Modal show={isAddNewChannelModalOpen} onHide={handleClose}>
-            <Modal.Header closeButton>
+        <Modal show={isAddNewChannelModalOpen} onHide={handleClose} className="text-white">
+            <Modal.Header closeButton closeVariant="white" className="bg-dark border-0">
                 <Modal.Title>Add New Channel:</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="bg-dark">
                 <Form>
                     <Form.Group>
                         <Form.Label>Channel name:</Form.Label>
@@ -32,11 +37,19 @@ export default function AddNewChannelModal() {
                             placeholder="Enter channel name"
                             value={channelName}
                             onChange={e => setChannelName(e.target.value)}
+                            className="bg-secondary text-white border-0"
                         ></Form.Control>
+                        <Form.Check
+                            className="mt-3"
+                            type="switch"
+                            id="private-channel"
+                            label="Private"
+                            onChange={handlePrivateChannelSwitch}
+                        />
                     </Form.Group>
                 </Form>
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className="bg-dark border-0">
                 <Button variant="success" onClick={handleAddNewChannel}>
                     Add channel
                 </Button>

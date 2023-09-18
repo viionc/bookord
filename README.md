@@ -1,5 +1,7 @@
 # Bookord
 
+https://bookord.web.app/
+
 Realtime chat application.
 
 Built with Vite, Authentication, Database, and hosting provided by Firebase.
@@ -14,13 +16,13 @@ Currently available features:
 
 - ability to create new chat channels
 
-Currently working at:
-
 - admin, moderator, chatter role system
 
-- ability to moderate channels (remove messages, remove channels)
+- user list (I'm not sure if it's possible to display only online users using Firestore)
+  
+Currently working on:
 
-- online user list (maybe friend list?)
+- ability to moderate channels (remove messages, remove channels)
 
 - private channels (online invited users or moderators can see it)
 

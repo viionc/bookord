@@ -30,13 +30,6 @@ export default function ChannelList() {
             return true;
         }
     };
-    // const handleShow = () => {
-    //     setShow(prev => (prev = !prev));
-    // };
-
-    // useEffect(() => {
-    //     setWidth(window.innerWidth);
-    // }, [window.innerWidth]);
 
     return (
         <div

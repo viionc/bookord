@@ -22,6 +22,7 @@ import {
     increment,
 } from "firebase/firestore";
 import {v4 as uuid} from "uuid";
+import filter from "leo-profanity";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
@@ -352,7 +353,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
 
     const sendMessage = (message: Message) => {
         if (!currentUser) return;
-
+        message.body = filter.clean(message.body);
         updateDoc(doc(db, "channels", currentChannel), {
             messages: arrayUnion({
                 ...message,

@@ -16,7 +16,7 @@ export default function RegisterModal() {
     const [nameAlreadyExists, setNameAlreadyExists] = useState(false);
 
     const {isRegisterModalOpen, closeModal} = useModalsContext();
-    const {registerUser, userDatabase} = useFirebaseContext();
+    const {registerUser, userDatabase, loginAnonymously} = useFirebaseContext();
 
     const handleConfirmPassword = (pass: string) => {
         setConfirmPassword(pass);
@@ -70,6 +70,10 @@ export default function RegisterModal() {
         registerUser(email, password, username);
     };
 
+    const handleAnonLogin = () => {
+        loginAnonymously();
+        handleClose();
+    };
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         handleRegisterButton();
@@ -147,6 +151,9 @@ export default function RegisterModal() {
             <Modal.Footer className="bg-dark">
                 <Button variant="success" onClick={handleRegisterButton}>
                     Register
+                </Button>
+                <Button variant="warning" onClick={handleAnonLogin}>
+                    Login as Anon
                 </Button>
             </Modal.Footer>
         </Modal>

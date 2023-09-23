@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {useFirebaseContext, UserProfile} from "../context/FirebaseContext";
 import {useModalsContext} from "../context/ModalsContext";
+import {Col} from "react-bootstrap";
 
 export default function UserList() {
     const {userDatabase, currentUserProfile} = useFirebaseContext();
@@ -37,75 +38,82 @@ export default function UserList() {
     }, [userDatabase]);
 
     return (
-        <div className="h-100 p-5" style={{width: "20vw", backgroundColor: "rgb(42 43 49)"}}>
-            <div>
-                <p className="text-secondary m-0 mt-1">Admins ({admins.length}):</p>
-                {admins.map(user => {
-                    return (
-                        <h5
-                            className="m-0 hover"
-                            key={user.uid}
-                            style={{color: "green"}}
-                            onClick={() =>
-                                openModal({key: "userprofile", profileClicked: user.uid})
-                            }
-                        >
-                            {user.displayName}
-                        </h5>
-                    );
-                })}
+        <Col
+            xs={4}
+            id="user-list"
+            className="p-3"
+            style={{backgroundColor: "rgb(42 43 49)", flex: "0 0 300px"}}
+        >
+            <div id="channels" className="px-4 mh-100 overflow-auto" style={{height: "80vh"}}>
+                <div>
+                    <p className="text-secondary m-0 mt-1">Admins ({admins.length}):</p>
+                    {admins.map(user => {
+                        return (
+                            <h5
+                                className="m-0 hover"
+                                key={user.uid}
+                                style={{color: "green"}}
+                                onClick={() =>
+                                    openModal({key: "userprofile", profileClicked: user.uid})
+                                }
+                            >
+                                {user.displayName}
+                            </h5>
+                        );
+                    })}
+                </div>
+                <div>
+                    <p className="text-secondary m-0">Moderators ({moderators.length}):</p>
+                    {moderators.map(user => {
+                        return (
+                            <h5
+                                className="m-0 hover"
+                                key={user.uid}
+                                style={{color: "yellow"}}
+                                onClick={() =>
+                                    openModal({key: "userprofile", profileClicked: user.uid})
+                                }
+                            >
+                                {user.displayName}
+                            </h5>
+                        );
+                    })}
+                </div>
+                <div>
+                    <p className="text-secondary m-0">Friends ({friends.length}):</p>
+                    {friends.map(user => {
+                        return (
+                            <h5
+                                className="m-0 hover"
+                                key={user.uid}
+                                style={{color: "white"}}
+                                onClick={() =>
+                                    openModal({key: "userprofile", profileClicked: user.uid})
+                                }
+                            >
+                                {user.displayName}
+                            </h5>
+                        );
+                    })}
+                </div>
+                <div>
+                    <p className="text-secondary m-0">Members ({members.length}):</p>
+                    {members.map(user => {
+                        return (
+                            <h5
+                                className="m-0 hover"
+                                key={user.uid}
+                                style={{color: "white"}}
+                                onClick={() =>
+                                    openModal({key: "userprofile", profileClicked: user.uid})
+                                }
+                            >
+                                {user.displayName}
+                            </h5>
+                        );
+                    })}
+                </div>
             </div>
-            <div>
-                <p className="text-secondary m-0">Moderators ({moderators.length}):</p>
-                {moderators.map(user => {
-                    return (
-                        <h5
-                            className="m-0 hover"
-                            key={user.uid}
-                            style={{color: "yellow"}}
-                            onClick={() =>
-                                openModal({key: "userprofile", profileClicked: user.uid})
-                            }
-                        >
-                            {user.displayName}
-                        </h5>
-                    );
-                })}
-            </div>
-            <div>
-                <p className="text-secondary m-0">Friends ({friends.length}):</p>
-                {friends.map(user => {
-                    return (
-                        <h5
-                            className="m-0 hover"
-                            key={user.uid}
-                            style={{color: "white"}}
-                            onClick={() =>
-                                openModal({key: "userprofile", profileClicked: user.uid})
-                            }
-                        >
-                            {user.displayName}
-                        </h5>
-                    );
-                })}
-            </div>
-            <div>
-                <p className="text-secondary m-0">Members ({members.length}):</p>
-                {members.map(user => {
-                    return (
-                        <h5
-                            className="m-0 hover"
-                            key={user.uid}
-                            style={{color: "white"}}
-                            onClick={() =>
-                                openModal({key: "userprofile", profileClicked: user.uid})
-                            }
-                        >
-                            {user.displayName}
-                        </h5>
-                    );
-                })}
-            </div>
-        </div>
+        </Col>
     );
 }

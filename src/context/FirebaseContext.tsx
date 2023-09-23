@@ -4,6 +4,7 @@ import {initializeApp} from "firebase/app";
 import {
     createUserWithEmailAndPassword,
     getAuth,
+    signInAnonymously,
     signInWithEmailAndPassword,
     signOut,
     updateProfile,
@@ -36,6 +37,7 @@ type FirebaseContextProps = {
     currentUser: User | null;
     registerUser: (ussername: string, email: string, password: string) => void;
     loginUser: (email: string, password: string) => void;
+    loginAnonymously: () => void;
     logoutUser: () => void;
     sendMessage: (message: Message) => void;
     currentChannel: string;
@@ -189,7 +191,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 setUserDatabase(usersArray);
             })
             .then(() => {
-                let profile = usersArray.filter(user => user.uid === user.uid)[0];
+                let profile = usersArray.filter(u => u.uid === user.uid)[0];
                 setcurrentUserProfile(profile);
             });
 
@@ -223,11 +225,26 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         });
     };
 
+    const loginAnonymously = () => {
+        signInAnonymously(auth)
+            .then(userCredential => {
+                console.log("user created", new Date(Date.now()));
+                updateProfile(userCredential.user, {
+                    displayName: `anon-${Math.floor(Math.random() * 10000)}`,
+                })
+                    .then(() => setCurrentUser(userCredential.user))
+                    .then(() => addUserToDatabase(createCurrentUserProfile(userCredential.user)));
+            })
+            .catch(error => {
+                alert(error.errorMessage);
+            });
+    };
+
     const logoutUser = () => {
         if (!currentUser) return;
         signOut(auth)
             .then(() => {
-                location.reload();
+                // location.reload();
                 setCurrentUser(null);
                 setChannels([]);
                 setDataLoaded(false);
@@ -432,6 +449,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 currentUser,
                 registerUser,
                 loginUser,
+                loginAnonymously,
                 logoutUser,
                 sendMessage,
                 channels,

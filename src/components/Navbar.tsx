@@ -1,4 +1,4 @@
-import {Container, Button, Navbar as NavbarBs, Nav} from "react-bootstrap";
+import {Button, Navbar as NavbarBs, Nav, Row} from "react-bootstrap";
 import styles from "./Navbar.module.css";
 import {useModalsContext} from "../context/ModalsContext";
 // import {logoutUser} from "../Firebase";
@@ -6,15 +6,15 @@ import {useFirebaseContext} from "../context/FirebaseContext";
 
 export default function Navbar() {
     const {openModal} = useModalsContext();
-    const {currentUser, logoutUser} = useFirebaseContext();
+    const {currentUser, logoutUser, loginAnonymously} = useFirebaseContext();
 
     const logout = () => {
         logoutUser();
     };
 
     return (
-        <NavbarBs className="bg-success shadow-lg text-white p-3 fs-3" style={{height: "8vh"}}>
-            <Container>
+        <Row className="w-100" style={{maxHeight: "7vh"}}>
+            <NavbarBs className="bg-dark shadow-lg text-white p-1 fs-3 px-5">
                 <Nav className="me-auto">Bookord</Nav>
                 {!currentUser ? (
                     <>
@@ -30,16 +30,22 @@ export default function Navbar() {
                         >
                             Register
                         </Button>
+                        <Button variant="warning" onClick={loginAnonymously}>
+                            Login as Anon
+                        </Button>
                     </>
                 ) : (
                     <div className="d-flex justify-content-center align-items-center gap-2">
                         <p className="m-0">{currentUser.displayName}</p>
-                        <Button className={`bg-danger me-2 lg ${styles.register}`} onClick={logout}>
+                        <Button
+                            className={`bg-secondary me-2 lg ${styles.register}`}
+                            onClick={logout}
+                        >
                             Logout
                         </Button>
                     </div>
                 )}
-            </Container>
-        </NavbarBs>
+            </NavbarBs>
+        </Row>
     );
 }

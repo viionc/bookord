@@ -1,4 +1,4 @@
-import {Container} from "react-bootstrap";
+import {Col} from "react-bootstrap";
 import {Channel, useFirebaseContext} from "../context/FirebaseContext";
 import {useModalsContext} from "../context/ModalsContext";
 import ChannelComponent from "./ChannelComponent";
@@ -6,8 +6,6 @@ import ChannelComponent from "./ChannelComponent";
 export default function ChannelList() {
     const {channels, currentUserProfile} = useFirebaseContext();
     const {openModal} = useModalsContext();
-    // const [show, setShow] = useState(true);
-    // const [width, setWidth] = useState(window.innerWidth);
 
     const handleAddChannel = () => {
         openModal({key: "addnewchannel"});
@@ -27,21 +25,30 @@ export default function ChannelList() {
     };
 
     return (
-        <div
-            className="d-flex p-5 text-secondary"
-            style={{width: "20vw", backgroundColor: "rgb(42 43 49)"}}
+        <Col
+            xs={4}
+            id="channel-list"
+            className={`text-secondary mh-100 position-relative `}
+            style={{backgroundColor: "rgb(42 43 49)", flex: "0 0 300px"}}
         >
-            <Container className="d-flex flex-column">
-                <div className="d-flex flex-row justify-content-between text-white align-items-center">
-                    <h6>Text Channels</h6>
-                    <span
-                        className="fs-2 d-flex justify-content-center align-items-center"
-                        style={{cursor: "pointer"}}
-                        onClick={handleAddChannel}
-                    >
-                        +
-                    </span>
+            {/* <Button
+                className="position-absolute bg-dark text-white fs-5 d-flex justify-content-center align-items-center"
+                style={{top: "25%", left: 5, height: 30, width: 30}}
+                onClick={() => setHide(!hide)}
+            >
+                {"<"}
+            </Button> */}
+            <div className="text-white d-flex justify-content-between align-items-center">
+                <div className="fs-5">Text Channels</div>
+                <div
+                    className="fs-1 d-flex justify-content-end align-items-center"
+                    style={{cursor: "pointer"}}
+                    onClick={handleAddChannel}
+                >
+                    <span>+</span>
                 </div>
+            </div>
+            <div id="channels" className="px-4 mh-100 overflow-auto" style={{height: "80vh"}}>
                 {channels.map(channel => {
                     if (
                         channel.id === "moderator" &&
@@ -60,78 +67,7 @@ export default function ChannelList() {
                         return <ChannelComponent key={channel.id} {...channel}></ChannelComponent>;
                     }
                 })}
-            </Container>
-        </div>
+            </div>
+        </Col>
     );
 }
-// /            {width < 800 ? (
-//     <Offcanvas show={show} onHide={() => setShow(false)}>
-//         <Offcanvas.Header closeButton>
-//             <Offcanvas.Title>
-//                 <div className="d-flex flex-row justify-content-between text-white align-items-center">
-//                     <h6>Text Channels</h6>
-//                     <span
-//                         className="fs-2 d-flex justify-content-center align-items-center"
-//                         style={{cursor: "pointer"}}
-//                         onClick={handleAddChannel}
-//                     >
-//                         +
-//                     </span>
-//                 </div>
-//             </Offcanvas.Title>
-//             <Offcanvas.Body>
-//                 {channels.map(channel => {
-//                     if (
-//                         channel.id === "moderator" &&
-//                         userProfile?.roles.includes("moderator")
-//                     )
-//                         return (
-//                             <h5
-//                                 key={channel.id}
-//                                 className={`rounded ${
-//                                     channel.id === currentChannel
-//                                         ? styles.active
-//                                         : styles.inactive
-//                                 }`}
-//                                 onClick={() => handleChannelClicked(channel)}
-//                             >
-//                                 #{channel.name}
-//                             </h5>
-//                         );
-//                 })}
-//                 {channels.map(channel => {
-//                     if (channel.id === "general")
-//                         return (
-//                             <h5
-//                                 key={channel.id}
-//                                 className={`rounded ${
-//                                     channel.id === currentChannel
-//                                         ? styles.active
-//                                         : styles.inactive
-//                                 }`}
-//                                 onClick={() => handleChannelClicked(channel)}
-//                             >
-//                                 #{channel.name}
-//                             </h5>
-//                         );
-//                 })}
-
-//                 {channels.map(channel => {
-//                     if (channel.id === "general" || channel.id === "moderator") return;
-//                     return (
-//                         <h5
-//                             key={channel.id}
-//                             className={`rounded ${
-//                                 channel.id === currentChannel
-//                                     ? styles.active
-//                                     : styles.inactive
-//                             }`}
-//                             onClick={() => handleChannelClicked(channel)}
-//                         >
-//                             #{channel.name}
-//                         </h5>
-//                     );
-//                 })}
-//             </Offcanvas.Body>
-//         </Offcanvas.Header>
-//     </Offcanvas>

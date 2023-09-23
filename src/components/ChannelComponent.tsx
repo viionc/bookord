@@ -28,19 +28,22 @@ const ChannelComponent: React.FC<Channel> = (channel: Channel) => {
     };
     return (
         <div
-            className={`d-flex flex-row align-items-center mb-2 rounded ps-3 pe-3 ${
+            className={` d-flex justify-content-between my-2 rounded px-3 ${
                 channel.id === currentChannel ? styles.active : styles.inactive
-            }`}
+            } ${styles.channelcomponent}`}
+            onClick={() => handleChannelClicked(channel)}
         >
-            <h5 className={`m-0 hover`} onClick={() => handleChannelClicked(channel)}>
-                #{channel.name}
-            </h5>
+            <div className="">
+                <h5 className={`m-0 hover`}>#{channel.name}</h5>
+            </div>
             {currentUserProfile && checkIfCanSeeChannelSettingButton(channel) && (
-                <i
-                    className="fa-solid fa-crown hover"
-                    style={{color: "#f0cd6a", cursor: "pointer"}}
-                    onClick={() => handleOpenChannelSettings(channel)}
-                ></i>
+                <div className="d-flex justify-content-end align-items-center">
+                    <i
+                        className="fa-solid fa-crown hover"
+                        style={{color: "#f0cd6a", cursor: "pointer"}}
+                        onClick={() => handleOpenChannelSettings(channel)}
+                    ></i>
+                </div>
             )}
         </div>
     );

@@ -1,4 +1,4 @@
-import {Container} from "react-bootstrap";
+import {Col, Container} from "react-bootstrap";
 import {Message, useFirebaseContext} from "../context/FirebaseContext";
 import Card from "./Card";
 import {useEffect, useState} from "react";
@@ -27,9 +27,11 @@ export default function Feed() {
     }, [channels, currentChannel, userDatabase]);
 
     return (
-        <Container
-            className="h-100 d-flex flex-column position-relative pt-4"
-            style={{backgroundColor: "#313338"}}
+        <Col
+            xs={"auto"}
+            id="feed"
+            className="d-flex flex-column position-relative"
+            style={{backgroundColor: "#313338", flex: "1 1 auto"}}
         >
             {currentUserProfile && currentUserProfile.roles.includes("moderator") && (
                 <div
@@ -55,6 +57,6 @@ export default function Feed() {
                 )}
             </Container>
             <NewMessageInput></NewMessageInput>
-        </Container>
+        </Col>
     );
 }

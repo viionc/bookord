@@ -21,14 +21,12 @@ export default function ChannelSettingsModal() {
     };
 
     const handleChannelNameChange = (e: any) => {
-        if (e.target.value.length === 11) {
-            return;
-        }
+        if (e.target.value.length === 11) return;
         setNewChannelName(e.target.value);
     };
 
     const handleNewMembersChange = (selected: MultiValue<{label: string; value: string}>) => {
-        setNewMembers([...selected.map(s => s.value)]);
+        setNewMembers([...selected.map(s => s.label)]);
     };
 
     useEffect(() => {

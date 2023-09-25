@@ -5,7 +5,7 @@ import {Col} from "react-bootstrap";
 
 export default function UserList() {
     const {userDatabase, currentUserProfile} = useFirebaseContext();
-    const {openModal} = useModalsContext();
+    const {handleModalReducer} = useModalsContext();
 
     const [admins, setAdmins] = useState<UserProfile[]>([]);
     const [moderators, setModerators] = useState<UserProfile[]>([]);
@@ -54,7 +54,7 @@ export default function UserList() {
                                 key={user.uid}
                                 style={{color: "green"}}
                                 onClick={() =>
-                                    openModal({key: "userprofile", profileClicked: user.uid})
+                                    handleModalReducer({type: "USER_PROFILE", payload: user.uid})
                                 }
                             >
                                 {user.displayName}
@@ -71,7 +71,7 @@ export default function UserList() {
                                 key={user.uid}
                                 style={{color: "yellow"}}
                                 onClick={() =>
-                                    openModal({key: "userprofile", profileClicked: user.uid})
+                                    handleModalReducer({type: "USER_PROFILE", payload: user.uid})
                                 }
                             >
                                 {user.displayName}
@@ -88,7 +88,7 @@ export default function UserList() {
                                 key={user.uid}
                                 style={{color: "white"}}
                                 onClick={() =>
-                                    openModal({key: "userprofile", profileClicked: user.uid})
+                                    handleModalReducer({type: "USER_PROFILE", payload: user.uid})
                                 }
                             >
                                 {user.displayName}
@@ -105,7 +105,7 @@ export default function UserList() {
                                 key={user.uid}
                                 style={{color: "white"}}
                                 onClick={() =>
-                                    openModal({key: "userprofile", profileClicked: user.uid})
+                                    handleModalReducer({type: "USER_PROFILE", payload: user.uid})
                                 }
                             >
                                 {user.displayName}

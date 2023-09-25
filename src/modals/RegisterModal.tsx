@@ -15,7 +15,7 @@ export default function RegisterModal() {
     const [passwordTooShort, setPasswordTooShort] = useState(false);
     const [nameAlreadyExists, setNameAlreadyExists] = useState(false);
 
-    const {isRegisterModalOpen, closeModal} = useModalsContext();
+    const {handleModalReducer, modalState} = useModalsContext();
     const {registerUser, userDatabase, loginAnonymously} = useFirebaseContext();
 
     const handleConfirmPassword = (pass: string) => {
@@ -28,7 +28,7 @@ export default function RegisterModal() {
     };
 
     const handleClose = () => {
-        closeModal({key: "register"});
+        handleModalReducer({type: "REGISTER"});
     };
 
     const handleRegisterButton = () => {
@@ -80,7 +80,7 @@ export default function RegisterModal() {
     };
 
     return (
-        <Modal show={isRegisterModalOpen} onHide={handleClose} className="text-white">
+        <Modal show={modalState.isRegisterModalOpen} onHide={handleClose} className="text-white">
             <Modal.Header closeButton closeVariant="white" className="bg-dark">
                 <Modal.Title>Register:</Modal.Title>
             </Modal.Header>

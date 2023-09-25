@@ -16,6 +16,3 @@ h5 {
 .channelcomponent {
     cursor: pointer;
 }
-.channelcomponent:hover {
-    background-color: rgb(33, 35, 51);
-}

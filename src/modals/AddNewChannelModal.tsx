@@ -7,11 +7,11 @@ import {useFirebaseContext} from "../context/FirebaseContext";
 export default function AddNewChannelModal() {
     const [channelName, setChannelName] = useState("");
     const [isChannelPrivate, setIsChannelPrivate] = useState(false);
-    const {isAddNewChannelModalOpen, closeModal} = useModalsContext();
+    const {handleModalReducer, modalState} = useModalsContext();
     const {addNewChannel} = useFirebaseContext();
 
     const handleAddNewChannel = () => {
-        closeModal({key: "addnewchannel"});
+        handleModalReducer({type: "ADD_NEW_CHANNEL"});
         addNewChannel(channelName, isChannelPrivate);
     };
 
@@ -23,7 +23,7 @@ export default function AddNewChannelModal() {
     };
 
     const handleClose = () => {
-        closeModal({key: "addnewchannel"});
+        handleModalReducer({type: "ADD_NEW_CHANNEL"});
     };
 
     const handlePrivateChannelSwitch = () => {
@@ -31,7 +31,11 @@ export default function AddNewChannelModal() {
     };
 
     return (
-        <Modal show={isAddNewChannelModalOpen} onHide={handleClose} className="text-white">
+        <Modal
+            show={modalState.isAddNewChannelModalOpen}
+            onHide={handleClose}
+            className="text-white"
+        >
             <Modal.Header closeButton closeVariant="white" className="bg-dark border-0">
                 <Modal.Title>Add New Channel:</Modal.Title>
             </Modal.Header>

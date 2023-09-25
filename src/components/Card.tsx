@@ -8,7 +8,7 @@ import Trash from "./Trash";
 
 const Card: React.FC<Message> = (message: Message) => {
     const {currentUserProfile, userDatabase} = useFirebaseContext();
-    const {openModal} = useModalsContext();
+    const {handleModalReducer} = useModalsContext();
     const [usernameColor, setUserNameColor] = useState("white");
 
     useEffect(() => {
@@ -20,7 +20,9 @@ const Card: React.FC<Message> = (message: Message) => {
         <Container className="mt-2 d-flex pt flex-column text-white">
             <div className="d-flex jutify-content-center align-items-center gap-2">
                 <h3
-                    onClick={() => openModal({key: "userprofile", profileClicked: message.userUid})}
+                    onClick={() =>
+                        handleModalReducer({type: "USER_PROFILE", payload: message.userUid})
+                    }
                     style={{color: usernameColor, cursor: "pointer"}}
                     className="hover"
                 >

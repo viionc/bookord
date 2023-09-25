@@ -7,21 +7,21 @@ import {useFirebaseContext} from "../context/FirebaseContext";
 export default function LoginModal() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const {isLoginModalOpen, openModal, closeModal} = useModalsContext();
+    const {modalState, handleModalReducer} = useModalsContext();
     const {loginUser} = useFirebaseContext();
 
     const handleRegisterButton = () => {
-        closeModal({key: "login"});
-        openModal({key: "register"});
+        handleModalReducer({type: "LOGIN"});
+        handleModalReducer({type: "REGISTER"});
     };
 
     const handleClose = () => {
-        closeModal({key: "login"});
+        handleModalReducer({type: "LOGIN"});
     };
 
     const handleLoginButton = () => {
         loginUser(email, password);
-        closeModal({key: "login"});
+        handleModalReducer({type: "LOGIN"});
     };
 
     const handleSubmit = (e: FormEvent) => {
@@ -31,7 +31,7 @@ export default function LoginModal() {
     };
 
     return (
-        <Modal show={isLoginModalOpen} onHide={handleClose} className="text-white">
+        <Modal show={modalState.isLoginModalOpen} onHide={handleClose} className="text-white">
             <Modal.Header closeButton closeVariant="white" className="bg-dark">
                 <Modal.Title>Login:</Modal.Title>
             </Modal.Header>

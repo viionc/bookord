@@ -5,49 +5,64 @@ import {useFirebaseContext} from "../context/FirebaseContext";
 import Select, {MultiValue} from "react-select";
 
 export default function ChannelSettingsModal() {
-    const {closeModal, isChannelSettingsModalOpen, channelClicked} = useModalsContext();
+    const {handleModalReducer, modalState} = useModalsContext();
+
     const {userDatabase, getUserByUid, currentUserProfile, saveChannelSettings} =
         useFirebaseContext();
-    const [newChannelName, setNewChannelName] = useState("");
-    const [newPrivacy, setNewPrivacy] = useState(channelClicked.isPrivate);
-    const [newMembers, setNewMembers] = useState(channelClicked.members);
+
+    const [activeChannel, setActiveChannel] = useState(modalState.channelClicked);
 
     const handleClose = () => {
-        closeModal({key: "channelsettings"});
+        handleModalReducer({type: "CHANNEL_SETTINGS", payload: activeChannel});
     };
 
     const handlePrivateChannelSwitch = () => {
-        setNewPrivacy(!newPrivacy);
+        setActiveChannel(prev => {
+            return {...prev, isPrivate: !prev.isPrivate};
+        });
     };
 
     const handleChannelNameChange = (e: any) => {
         if (e.target.value.length === 11) return;
-        setNewChannelName(e.target.value);
+        setActiveChannel(prev => {
+            return {...prev, name: e.target.value};
+        });
     };
 
     const handleNewMembersChange = (selected: MultiValue<{label: string; value: string}>) => {
-        setNewMembers([...selected.map(s => s.label)]);
+        setActiveChannel(prev => {
+            return {...prev, members: [...selected.map(s => s.label)]};
+        });
     };
 
     useEffect(() => {
-        setNewPrivacy(channelClicked.isPrivate);
-        setNewMembers(channelClicked.members);
-    }, [channelClicked]);
+        setActiveChannel(modalState.channelClicked);
+    }, [modalState.channelClicked]);
     const handleSaveSettings = () => {
-        const nameChanged = newChannelName === channelClicked.name;
+        const nameChanged = activeChannel.name === modalState.channelClicked.name;
         const membersChanged =
-            JSON.stringify(newMembers) !== JSON.stringify(channelClicked.members);
-        const privacyChanged = newPrivacy === channelClicked.isPrivate;
+            JSON.stringify(activeChannel.members) !==
+            JSON.stringify(modalState.channelClicked.members);
+        const privacyChanged = activeChannel.isPrivate === modalState.channelClicked.isPrivate;
         if (nameChanged || membersChanged || privacyChanged) {
-            closeModal({key: "channelsettings"});
-            saveChannelSettings(newChannelName, newMembers, newPrivacy, channelClicked);
+            handleModalReducer({type: "CHANNEL_SETTINGS"});
+            saveChannelSettings(
+                activeChannel.name,
+                activeChannel.members,
+                activeChannel.isPrivate,
+                modalState.channelClicked
+            );
         }
     };
 
     return (
-        <Modal className="text-white" show={isChannelSettingsModalOpen} onHide={handleClose}>
+        <Modal
+            className="text-white"
+            show={modalState.isChannelSettingsModalOpen}
+            onHide={handleClose}
+        >
             <Modal.Header className="bg-dark" closeButton closeVariant="white">
-                <Modal.Title>#{channelClicked.name} settings:</Modal.Title>
+                <Modal.Title>#{modalState.channelClicked.name} settings:</Modal.Title>
             </Modal.Header>
 
             <Modal.Body className="bg-dark">
@@ -67,12 +82,12 @@ export default function ChannelSettingsModal() {
                                 aria-describedby="inputGroup-sizing-default"
                                 type="name"
                                 placeholder="Enter channel name"
-                                value={newChannelName}
+                                value={activeChannel.name}
                                 onChange={e => handleChannelNameChange(e)}
                                 className="bg-secondary text-white border-0"
                             ></Form.Control>
                         </InputGroup>
-                        {newChannelName.length === 10 && (
+                        {activeChannel.name.length === 10 && (
                             <Form.Text className="text-danger">
                                 Channel names can be only 10 characters long.
                             </Form.Text>
@@ -132,8 +147,8 @@ export default function ChannelSettingsModal() {
                         },
                     }}
                     defaultValue={
-                        channelClicked.members &&
-                        channelClicked.members
+                        modalState.channelClicked.members &&
+                        modalState.channelClicked.members
                             .filter(u => u !== currentUserProfile?.uid)
 
                             .map(user => {
@@ -144,7 +159,8 @@ export default function ChannelSettingsModal() {
                     options={userDatabase
                         .filter(
                             user =>
-                                channelClicked.members && !channelClicked.members.includes(user.uid)
+                                modalState.channelClicked.members &&
+                                !modalState.channelClicked.members.includes(user.uid)
                         )
                         .filter(
                             user =>

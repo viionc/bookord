@@ -1,11 +1,12 @@
 import {Row} from "react-bootstrap";
 import {useFirebaseContext} from "../context/FirebaseContext";
-import AddNewChannelModal from "./AddNewChannelModal";
+import AddNewChannelModal from "../modals/AddNewChannelModal";
 import ChannelList from "./ChannelList";
-import ChannelSettingsModal from "./ChannelSettingsModal";
+import ChannelSettingsModal from "../modals/ChannelSettingsModal";
 import Feed from "./Feed";
 import UserList from "./UserList";
-import UserProfileModal from "./UserProfileModal";
+import UserProfileModal from "../modals/UserProfileModal";
+import DeleteMessageModal from "../modals/DeleteMessageModal";
 
 export default function PageContent() {
     const {currentUser, dataLoaded} = useFirebaseContext();
@@ -18,6 +19,7 @@ export default function PageContent() {
                 <AddNewChannelModal></AddNewChannelModal>
                 <UserProfileModal></UserProfileModal>
                 <ChannelSettingsModal></ChannelSettingsModal>
+                <DeleteMessageModal></DeleteMessageModal>
             </Row>
         ) : (
             <div

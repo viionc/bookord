@@ -3,11 +3,11 @@ import {useModalsContext} from "../context/ModalsContext";
 import styles from "./ChannelList.module.css";
 
 const ChannelComponent: React.FC<Channel> = (channel: Channel) => {
-    const {openModal} = useModalsContext();
+    const {handleModalReducer} = useModalsContext();
     const {currentChannel, changeChannel, currentUserProfile} = useFirebaseContext();
 
     const handleOpenChannelSettings = (channel: Channel) => {
-        openModal({key: "channelsettings", channel: channel});
+        handleModalReducer({type: "CHANNEL_SETTINGS", payload: channel});
     };
 
     const handleChannelClicked = (channel: Channel) => {
@@ -28,7 +28,7 @@ const ChannelComponent: React.FC<Channel> = (channel: Channel) => {
     };
     return (
         <div
-            className={` d-flex justify-content-between my-2 rounded px-3 ${
+            className={` d-flex justify-content-between my-2 rounded px-3 hover ${
                 channel.id === currentChannel ? styles.active : styles.inactive
             } ${styles.channelcomponent}`}
             onClick={() => handleChannelClicked(channel)}

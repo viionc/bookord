@@ -55,6 +55,8 @@ body {
 }
 .hover:hover {
     opacity: 0.7;
+    background-color: #1a1a1a46;
+    border-radius: 25px;
 }
 .trash-icon {
     cursor: pointer;

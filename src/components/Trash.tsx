@@ -1,9 +1,11 @@
 import {Message, useFirebaseContext} from "../context/FirebaseContext";
+import {useModalsContext} from "../context/ModalsContext";
 
 function Trash({message}: {message: Message}) {
-    const {currentUserProfile, deleteMessage} = useFirebaseContext();
+    const {currentUserProfile} = useFirebaseContext();
+    const {handleModalReducer} = useModalsContext();
     function handleDeleteMessage() {
-        deleteMessage(message);
+        handleModalReducer({type: "DELETE_MESSAGE", payload: message.messageUid});
     }
     return (
         <>

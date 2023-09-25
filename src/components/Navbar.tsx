@@ -5,7 +5,7 @@ import {useModalsContext} from "../context/ModalsContext";
 import {useFirebaseContext} from "../context/FirebaseContext";
 
 export default function Navbar() {
-    const {openModal} = useModalsContext();
+    const {handleModalReducer} = useModalsContext();
     const {currentUser, logoutUser, loginAnonymously} = useFirebaseContext();
 
     const logout = () => {
@@ -20,13 +20,13 @@ export default function Navbar() {
                     <>
                         <Button
                             className={`bg-primary me-2 lg ${styles.login}`}
-                            onClick={() => openModal({key: "login"})}
+                            onClick={() => handleModalReducer({type: "LOGIN"})}
                         >
                             Login
                         </Button>
                         <Button
                             className={`bg-danger me-2 ${styles.register}`}
-                            onClick={() => openModal({key: "register"})}
+                            onClick={() => handleModalReducer({type: "REGISTER"})}
                         >
                             Register
                         </Button>

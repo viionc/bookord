@@ -5,10 +5,10 @@ import ChannelComponent from "./ChannelComponent";
 
 export default function ChannelList() {
     const {channels, currentUserProfile} = useFirebaseContext();
-    const {openModal} = useModalsContext();
+    const {handleModalReducer} = useModalsContext();
 
     const handleAddChannel = () => {
-        openModal({key: "addnewchannel"});
+        handleModalReducer({type: "ADD_NEW_CHANNEL"});
     };
 
     const checkIfUserCanSeeChannel = (channel: Channel) => {
@@ -38,14 +38,14 @@ export default function ChannelList() {
             >
                 {"<"}
             </Button> */}
-            <div className="text-white d-flex justify-content-between align-items-center">
+            <div className="text-white d-flex justify-content-evenly align-items-center">
                 <div className="fs-5">Text Channels</div>
                 <div
-                    className="fs-1 d-flex justify-content-end align-items-center"
-                    style={{cursor: "pointer"}}
+                    className="fs-1 d-flex justify-content-center align-items-center hover"
+                    style={{cursor: "pointer", height: 60, width: 60}}
                     onClick={handleAddChannel}
                 >
-                    <span>+</span>
+                    +
                 </div>
             </div>
             <div id="channels" className="px-4 mh-100 overflow-auto" style={{height: "80vh"}}>

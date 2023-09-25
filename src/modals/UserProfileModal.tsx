@@ -5,14 +5,14 @@ import {useEffect, useState} from "react";
 import {getColorByUserRole, timestampToDate} from "../utilities/utilities";
 
 export default function UserProfileModal() {
-    const {isUserProfileModalOpen, closeModal, profileUidClicked} = useModalsContext();
+    const {handleModalReducer, modalState} = useModalsContext();
     const {userDatabase, currentUserProfile, addUserToFriends, removeUserFromFriends} =
         useFirebaseContext();
     const [clickedUserProfile, setClickedUserProfile] = useState<UserProfile>({} as UserProfile);
     const [usernameColor, setUsernameColor] = useState("white");
 
     const handleClose = () => {
-        closeModal({key: "userprofile"});
+        handleModalReducer({type: "USER_PROFILE"});
     };
 
     const handleAddToFriends = () => {
@@ -22,14 +22,14 @@ export default function UserProfileModal() {
         removeUserFromFriends(clickedUserProfile.uid);
     };
     useEffect(() => {
-        const user = userDatabase.filter(user => user.uid === profileUidClicked)[0];
+        const user = userDatabase.filter(user => user.uid === modalState.profileUidClicked)[0];
         if (!user) return;
         setClickedUserProfile(user);
         setUsernameColor(getColorByUserRole(user.roles));
-    }, [profileUidClicked]);
+    }, [modalState.profileUidClicked]);
 
     return currentUserProfile ? (
-        <Modal show={isUserProfileModalOpen} onHide={handleClose}>
+        <Modal show={modalState.isUserProfileModalOpen} onHide={handleClose}>
             <Modal.Header closeButton className="bg-dark" closeVariant="white">
                 <Modal.Title style={{color: usernameColor}} className="d-flex flex-column">
                     <p className="m-0">{clickedUserProfile.displayName}</p>

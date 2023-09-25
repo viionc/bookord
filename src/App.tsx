@@ -1,8 +1,8 @@
 import Navbar from "./components/Navbar";
 import {ModalsProvider} from "./context/ModalsContext";
 import {useFirebaseContext} from "./context/FirebaseContext";
-import LoginModal from "./components/LoginModal";
-import RegisterModal from "./components/RegisterModal";
+import LoginModal from "./modals/LoginModal";
+import RegisterModal from "./modals/RegisterModal";
 import PageContent from "./components/PageContent";
 import {Container} from "react-bootstrap";
 

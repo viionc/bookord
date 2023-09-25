@@ -36,22 +36,22 @@ const firebaseConfig = {
 
 type FirebaseContextProps = {
     currentUser: User | null;
+    currentChannel: string;
+    channels: Channel[];
+    currentUserProfile: UserProfile | null;
+    userDatabase: UserProfile[];
+    dataLoaded: boolean;
     registerUser: (ussername: string, email: string, password: string) => void;
     loginUser: (email: string, password: string) => void;
     loginAnonymously: () => void;
     logoutUser: () => void;
     sendMessage: (message: Message) => void;
-    deleteMessage: (message: Message) => void;
-    currentChannel: string;
-    channels: Channel[];
+    deleteMessage: (message: string) => void;
     addNewChannel: (name: string, isPrivate: boolean) => void;
     changeChannel: (name: string) => void;
     clearChannel: () => void;
     likeMessage: (message: Message) => void;
     removeLikeMessage: (messages: Message) => void;
-    currentUserProfile: UserProfile | null;
-    userDatabase: UserProfile[];
-    dataLoaded: boolean;
     addUserToFriends: (userUid: string) => void;
     removeUserFromFriends: (userUid: string) => void;
     getUserByUid: (userUid: string) => UserProfile;
@@ -366,11 +366,11 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         });
     };
 
-    const deleteMessage = (message: Message) => {
+    const deleteMessage = (messageUid: string) => {
         if (!currentUser) return;
         const messages = channels
             .filter(ch => ch.id === currentChannel)[0]
-            .messages.filter(m => m.messageUid !== message.messageUid);
+            .messages.filter(m => m.messageUid !== messageUid);
         updateDoc(doc(db, "channels", currentChannel), {
             messages: messages,
         });

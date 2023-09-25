@@ -1,11 +1,10 @@
 import {useEffect, useState} from "react";
 import {useFirebaseContext, UserProfile} from "../context/FirebaseContext";
-import {useModalsContext} from "../context/ModalsContext";
 import {Col} from "react-bootstrap";
+import UserListComponent from "./UserListComponent";
 
 export default function UserList() {
     const {userDatabase, currentUserProfile} = useFirebaseContext();
-    const {handleModalReducer} = useModalsContext();
 
     const [admins, setAdmins] = useState<UserProfile[]>([]);
     const [moderators, setModerators] = useState<UserProfile[]>([]);
@@ -48,69 +47,25 @@ export default function UserList() {
                 <div>
                     <p className="text-secondary m-0 mt-1">Admins ({admins.length}):</p>
                     {admins.map(user => {
-                        return (
-                            <h5
-                                className="m-0 hover"
-                                key={user.uid}
-                                style={{color: "green"}}
-                                onClick={() =>
-                                    handleModalReducer({type: "USER_PROFILE", payload: user.uid})
-                                }
-                            >
-                                {user.displayName}
-                            </h5>
-                        );
+                        return <UserListComponent user={user} color={"green"} />;
                     })}
                 </div>
                 <div>
                     <p className="text-secondary m-0">Moderators ({moderators.length}):</p>
                     {moderators.map(user => {
-                        return (
-                            <h5
-                                className="m-0 hover"
-                                key={user.uid}
-                                style={{color: "yellow"}}
-                                onClick={() =>
-                                    handleModalReducer({type: "USER_PROFILE", payload: user.uid})
-                                }
-                            >
-                                {user.displayName}
-                            </h5>
-                        );
+                        return <UserListComponent user={user} color={"yellow"} />;
                     })}
                 </div>
                 <div>
                     <p className="text-secondary m-0">Friends ({friends.length}):</p>
                     {friends.map(user => {
-                        return (
-                            <h5
-                                className="m-0 hover"
-                                key={user.uid}
-                                style={{color: "white"}}
-                                onClick={() =>
-                                    handleModalReducer({type: "USER_PROFILE", payload: user.uid})
-                                }
-                            >
-                                {user.displayName}
-                            </h5>
-                        );
+                        return <UserListComponent user={user} color={"pink"} />;
                     })}
                 </div>
                 <div>
                     <p className="text-secondary m-0">Members ({members.length}):</p>
                     {members.map(user => {
-                        return (
-                            <h5
-                                className="m-0 hover"
-                                key={user.uid}
-                                style={{color: "white"}}
-                                onClick={() =>
-                                    handleModalReducer({type: "USER_PROFILE", payload: user.uid})
-                                }
-                            >
-                                {user.displayName}
-                            </h5>
-                        );
+                        return <UserListComponent user={user} color={"white"} />;
                     })}
                 </div>
             </div>

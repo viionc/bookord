@@ -20,6 +20,7 @@ import {
     onSnapshot,
     query,
     increment,
+    deleteDoc,
 } from "firebase/firestore";
 import {v4 as uuid} from "uuid";
 import filter from "leo-profanity";
@@ -52,8 +53,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 export const db = getFirestore(app);
-
-// const blogPostsCollection = collection(db, "blogposts");
 
 export function FirebaseProvider({children}: FirebaseProviderProps) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -97,12 +96,6 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
 
     useEffect(() => {
         if (!currentUser) return;
-        // const unsubscribe = onSnapshot(doc(db, "channels", currentChannel), doc => {
-        //     console.log("channel data from database fetched");
-        //     if (doc.exists()) {
-        //         updateCurrentChannel(doc.data().messages as Message[]);
-        //     }
-        // });
         let q = query(collection(db, "channels"));
         const unsubscribe = onSnapshot(q, querySnapshot => {
             console.log("channels data from database fetched");
@@ -192,7 +185,6 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         if (!currentUser) return;
         signOut(auth)
             .then(() => {
-                // location.reload();
                 setCurrentUser(null);
                 setChannels([]);
                 setDataLoaded(false);
@@ -219,14 +211,6 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         };
         return profile;
     };
-
-    // const isLoggedIn = () => {
-    //     return auth.currentUser ? true : false;
-    // };
-
-    // const getCurrentUser = () => {
-    //     return auth.currentUser;
-    // };
 
     const getUserByUid = (userUid: string): UserProfile => {
         return userDatabase.filter(u => u.uid === userUid)[0];
@@ -256,47 +240,6 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             ...newChannel,
         });
     }
-
-    // function getUsersFromDatabase() {
-    //     if (!currentUser) return;
-    //     const users = [] as any[];
-    //     getDocs(collection(db, "users"))
-    //         .then(data => {
-    //             data.docs.forEach(doc => {
-    //                 users.push({...doc.data()});
-    //             });
-    //             return users;
-    //         })
-    //         .then(users => {
-    //             setUserDatabase(users);
-    //             return users;
-    //         })
-    //         .then(users => {
-    //             let profile = users.filter(user => user.uid === currentUser.uid)[0];
-    //             setcurrentUserProfile(profile);
-    //         });
-    // }
-
-    // function getMessages() {
-    //     if (!currentUser) return;
-    //     const channels: Channel[] = [];
-    //     getDocs(collection(db, "channels"))
-    //         .then(data => {
-    //             data.docs.forEach(doc => {
-    //                 channels.push({
-    //                     id: doc.id,
-    //                     ...doc.data(),
-    //                 } as Channel);
-    //             });
-    //         })
-    //         .then(() => {
-    //             setChannels(channels);
-    //         })
-    //         .then(() => setDataLoaded(true));
-    // .then(() => {
-    //     setCurrentChannel(channels.filter(e => e.id === "general")[0]);
-    // });
-    // }
 
     const sendMessage = (message: Message) => {
         if (!currentUser) return;
@@ -381,19 +324,9 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         });
     };
 
-    // const updateCurrentChannel = (messages: Message[]) => {
-    //     if (!currentUser) return;
-    //     let newChannels = [...channels].map();
-
-    //     setChannels(prevChannels =>
-    //         prevChannels.map(ch => {
-    //             if (ch.id === currentChannel) {
-    //                 ch.messages = messages;
-    //             }
-    //             return ch;
-    //         })
-    //     );
-    // };
+    const deleteChannel = (channelId: string) => {
+        deleteDoc(doc(db, "channels", channelId));
+    };
 
     return (
         <FirebaseContext.Provider
@@ -419,6 +352,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 removeUserFromFriends,
                 getUserByUid,
                 saveChannelSettings,
+                deleteChannel,
             }}
         >
             {children}

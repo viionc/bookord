@@ -27,6 +27,7 @@ export type FirebaseContextProps = {
     removeUserFromFriends: (userUid: string) => void;
     getUserByUid: (userUid: string) => UserProfile;
     saveChannelSettings: ({}: SaveChannelSettingsProps) => void;
+    deleteChannel: (channelId: string) => void;
 };
 
 export type UserProfile = {

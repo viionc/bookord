@@ -8,7 +8,7 @@ import {Channel} from "../utilities/types";
 export default function ChannelSettingsModal() {
     const {handleModalReducer, modalState} = useModalsContext();
 
-    const {userDatabase, getUserByUid, currentUserProfile, saveChannelSettings} =
+    const {userDatabase, getUserByUid, currentUserProfile, saveChannelSettings, deleteChannel} =
         useFirebaseContext();
 
     const [activeChannel, setActiveChannel] = useState(modalState.channelClicked);
@@ -70,6 +70,8 @@ export default function ChannelSettingsModal() {
     };
 
     const handleDeleteChannel = () => {
+        if (!activeChannel) return;
+        deleteChannel(activeChannel.id);
         handleClose();
     };
 
@@ -195,7 +197,7 @@ export default function ChannelSettingsModal() {
                 <Button variant="success" onClick={handleSaveSettings}>
                     Save
                 </Button>
-                <Button variant="success" onClick={handleDeleteChannel}>
+                <Button variant="danger" onClick={handleDeleteChannel}>
                     Delete Channel
                 </Button>
             </Modal.Footer>

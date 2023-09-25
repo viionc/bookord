@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
-import {useFirebaseContext, UserProfile} from "../context/FirebaseContext";
+import {useFirebaseContext} from "../context/FirebaseContext";
 import {Col} from "react-bootstrap";
 import UserListComponent from "./UserListComponent";
+import {UserProfile} from "../utilities/types";
 
 export default function UserList() {
     const {userDatabase, currentUserProfile} = useFirebaseContext();
@@ -47,25 +48,25 @@ export default function UserList() {
                 <div>
                     <p className="text-secondary m-0 mt-1">Admins ({admins.length}):</p>
                     {admins.map(user => {
-                        return <UserListComponent user={user} color={"green"} />;
+                        return <UserListComponent key={user.uid} user={user} color={"green"} />;
                     })}
                 </div>
                 <div>
                     <p className="text-secondary m-0">Moderators ({moderators.length}):</p>
                     {moderators.map(user => {
-                        return <UserListComponent user={user} color={"yellow"} />;
+                        return <UserListComponent key={user.uid} user={user} color={"yellow"} />;
                     })}
                 </div>
                 <div>
                     <p className="text-secondary m-0">Friends ({friends.length}):</p>
                     {friends.map(user => {
-                        return <UserListComponent user={user} color={"pink"} />;
+                        return <UserListComponent key={user.uid} user={user} color={"pink"} />;
                     })}
                 </div>
                 <div>
                     <p className="text-secondary m-0">Members ({members.length}):</p>
                     {members.map(user => {
-                        return <UserListComponent user={user} color={"white"} />;
+                        return <UserListComponent key={user.uid} user={user} color={"white"} />;
                     })}
                 </div>
             </div>

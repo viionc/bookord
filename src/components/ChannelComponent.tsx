@@ -1,8 +1,9 @@
-import {Channel, useFirebaseContext} from "../context/FirebaseContext";
+import {useFirebaseContext} from "../context/FirebaseContext";
 import {useModalsContext} from "../context/ModalsContext";
+import {Channel} from "../utilities/types";
 import styles from "./ChannelList.module.css";
 
-const ChannelComponent: React.FC<Channel> = (channel: Channel) => {
+const ChannelComponent = ({channel}: {channel: Channel}) => {
     const {handleModalReducer} = useModalsContext();
     const {currentChannel, changeChannel, currentUserProfile} = useFirebaseContext();
 

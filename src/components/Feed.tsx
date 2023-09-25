@@ -1,8 +1,9 @@
 import {Col, Container} from "react-bootstrap";
-import {Message, useFirebaseContext} from "../context/FirebaseContext";
+import {useFirebaseContext} from "../context/FirebaseContext";
 import Card from "./Card";
 import {useEffect, useState} from "react";
 import NewMessageInput from "./NewMessageInput";
+import {Message} from "../utilities/types";
 
 export default function Feed() {
     const {currentChannel, clearChannel, channels, currentUserProfile, userDatabase} =
@@ -50,7 +51,7 @@ export default function Feed() {
             >
                 {messages.length ? (
                     messages.map(message => {
-                        return <Card key={message.messageUid} {...message}></Card>;
+                        return <Card key={message.messageUid} message={message}></Card>;
                     })
                 ) : (
                     <h4 className="text-white">Start your conversation here...</h4>

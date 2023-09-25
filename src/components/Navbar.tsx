@@ -1,7 +1,6 @@
 import {Button, Navbar as NavbarBs, Nav, Row} from "react-bootstrap";
 import styles from "./Navbar.module.css";
 import {useModalsContext} from "../context/ModalsContext";
-// import {logoutUser} from "../Firebase";
 import {useFirebaseContext} from "../context/FirebaseContext";
 
 export default function Navbar() {

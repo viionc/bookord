@@ -1,5 +1,6 @@
 import {User} from "firebase/auth";
-import {Message, useFirebaseContext} from "../context/FirebaseContext";
+import {useFirebaseContext} from "../context/FirebaseContext";
+import {Message} from "../utilities/types";
 
 const Reaction = ({message}: {message: Message}) => {
     const {likeMessage, currentUser, removeLikeMessage} = useFirebaseContext();

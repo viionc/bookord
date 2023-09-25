@@ -1,8 +1,9 @@
 import {Button, Modal} from "react-bootstrap";
 import {useModalsContext} from "../context/ModalsContext";
-import {UserProfile, useFirebaseContext} from "../context/FirebaseContext";
+import {useFirebaseContext} from "../context/FirebaseContext";
 import {useEffect, useState} from "react";
 import {getColorByUserRole, timestampToDate} from "../utilities/utilities";
+import {UserProfile} from "../utilities/types";
 
 export default function UserProfileModal() {
     const {handleModalReducer, modalState} = useModalsContext();

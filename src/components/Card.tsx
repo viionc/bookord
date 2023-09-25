@@ -1,12 +1,13 @@
 import {Container} from "react-bootstrap";
-import {Message, useFirebaseContext} from "../context/FirebaseContext";
+import {useFirebaseContext} from "../context/FirebaseContext";
 import {getColorByUserRole, timestampToDate} from "../utilities/utilities";
 import Reaction from "./Reaction";
 import {useEffect, useState} from "react";
 import {useModalsContext} from "../context/ModalsContext";
 import Trash from "./Trash";
+import {Message} from "../utilities/types";
 
-const Card: React.FC<Message> = (message: Message) => {
+const Card = ({message}: {message: Message}) => {
     const {currentUserProfile, userDatabase} = useFirebaseContext();
     const {handleModalReducer} = useModalsContext();
     const [usernameColor, setUserNameColor] = useState("white");

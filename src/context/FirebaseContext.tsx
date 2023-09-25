@@ -1,5 +1,5 @@
 import {User} from "firebase/auth/cordova";
-import {ReactNode, createContext, useContext, useEffect, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {initializeApp} from "firebase/app";
 import {
     createUserWithEmailAndPassword,
@@ -23,6 +23,14 @@ import {
 } from "firebase/firestore";
 import {v4 as uuid} from "uuid";
 import filter from "leo-profanity";
+import {
+    Channel,
+    Message,
+    SaveChannelSettingsProps,
+    FirebaseProviderProps,
+    UserProfile,
+    FirebaseContextProps,
+} from "../utilities/types";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
@@ -34,74 +42,12 @@ const firebaseConfig = {
     measurementId: "G-HKZH7WT4QG",
 };
 
-type FirebaseContextProps = {
-    currentUser: User | null;
-    currentChannel: string;
-    channels: Channel[];
-    currentUserProfile: UserProfile | null;
-    userDatabase: UserProfile[];
-    dataLoaded: boolean;
-    registerUser: (ussername: string, email: string, password: string) => void;
-    loginUser: (email: string, password: string) => void;
-    loginAnonymously: () => void;
-    logoutUser: () => void;
-    sendMessage: (message: Message) => void;
-    deleteMessage: (message: string) => void;
-    addNewChannel: (name: string, isPrivate: boolean) => void;
-    changeChannel: (name: string) => void;
-    clearChannel: () => void;
-    likeMessage: (message: Message) => void;
-    removeLikeMessage: (messages: Message) => void;
-    addUserToFriends: (userUid: string) => void;
-    removeUserFromFriends: (userUid: string) => void;
-    getUserByUid: (userUid: string) => UserProfile;
-    saveChannelSettings: (
-        channelName: string,
-        members: string[],
-        isPrivate: boolean,
-        clickedChannelId: Channel
-    ) => void;
-};
-
-export type UserProfile = {
-    displayName: string;
-    uid: string;
-    photoURL: string | null;
-    roles: UserRole[];
-    createdAt: number;
-    totalMessagesSent: number;
-    friends: string[];
-    ignored: string[];
-};
-
-export type UserRole = "member" | "moderator" | "admin";
-
-export type Channel = {
-    name: string;
-    id: string;
-    owner: string;
-    messages: Message[];
-    role: UserRole;
-    members: string[];
-    isPrivate: boolean;
-};
-export type Message = {
-    username: string;
-    userUid: string;
-    messageUid: string;
-    timestamp: number;
-    body: string;
-    likes: string[];
-};
 const FirebaseContext = createContext({} as FirebaseContextProps);
 
 export function useFirebaseContext() {
     return useContext(FirebaseContext);
 }
 
-type FirebaseProviderProps = {
-    children: ReactNode;
-};
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -425,15 +371,10 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         });
     };
 
-    const saveChannelSettings = (
-        name: string,
-        members: string[],
-        isPrivate: boolean,
-        clickedChannel: Channel
-    ) => {
+    const saveChannelSettings = ({name, members, isPrivate, channel}: SaveChannelSettingsProps) => {
         if (!currentUser) return;
-        setDoc(doc(db, "channels", clickedChannel.id), {
-            ...clickedChannel,
+        setDoc(doc(db, "channels", channel.id), {
+            ...channel,
             name,
             members,
             isPrivate,

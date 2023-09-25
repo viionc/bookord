@@ -3,6 +3,7 @@ import {useModalsContext} from "../context/ModalsContext";
 import {useEffect, useState} from "react";
 import {useFirebaseContext} from "../context/FirebaseContext";
 import Select, {MultiValue} from "react-select";
+import {Channel} from "../utilities/types";
 
 export default function ChannelSettingsModal() {
     const {handleModalReducer, modalState} = useModalsContext();
@@ -17,52 +18,73 @@ export default function ChannelSettingsModal() {
     };
 
     const handlePrivateChannelSwitch = () => {
-        setActiveChannel(prev => {
+        if (!activeChannel) return;
+        //@ts-ignore
+        setActiveChannel((prev: Channel) => {
             return {...prev, isPrivate: !prev.isPrivate};
         });
     };
 
     const handleChannelNameChange = (e: any) => {
+        if (!activeChannel) return;
         if (e.target.value.length === 11) return;
-        setActiveChannel(prev => {
+        //@ts-ignore
+        setActiveChannel((prev: Channel) => {
             return {...prev, name: e.target.value};
         });
     };
 
     const handleNewMembersChange = (selected: MultiValue<{label: string; value: string}>) => {
-        setActiveChannel(prev => {
-            return {...prev, members: [...selected.map(s => s.label)]};
+        if (!activeChannel) return;
+        //@ts-ignore
+        setActiveChannel((prev: Channel) => {
+            return {...prev, members: [...selected.map(s => s.value)]};
         });
+    };
+
+    const handleSaveSettings = () => {
+        if (!activeChannel || !modalState.channelClicked) return;
+
+        const nameChanged =
+            activeChannel.name !== modalState.channelClicked.name && activeChannel.name !== "";
+
+        const membersChanged =
+            JSON.stringify(activeChannel.members) !==
+            JSON.stringify(modalState.channelClicked.members);
+
+        const privacyChanged = activeChannel.isPrivate === modalState.channelClicked.isPrivate;
+
+        if (!(nameChanged || membersChanged || privacyChanged)) return;
+
+        const settingsToSave = {
+            name: nameChanged ? activeChannel.name : modalState.channelClicked.name,
+            members: membersChanged ? activeChannel.members : modalState.channelClicked.members,
+            isPrivate: privacyChanged
+                ? activeChannel.isPrivate
+                : modalState.channelClicked.isPrivate,
+            channel: activeChannel,
+        };
+
+        handleModalReducer({type: "CHANNEL_SETTINGS"});
+        saveChannelSettings(settingsToSave);
+    };
+
+    const handleDeleteChannel = () => {
+        handleClose();
     };
 
     useEffect(() => {
         setActiveChannel(modalState.channelClicked);
     }, [modalState.channelClicked]);
-    const handleSaveSettings = () => {
-        const nameChanged = activeChannel.name === modalState.channelClicked.name;
-        const membersChanged =
-            JSON.stringify(activeChannel.members) !==
-            JSON.stringify(modalState.channelClicked.members);
-        const privacyChanged = activeChannel.isPrivate === modalState.channelClicked.isPrivate;
-        if (nameChanged || membersChanged || privacyChanged) {
-            handleModalReducer({type: "CHANNEL_SETTINGS"});
-            saveChannelSettings(
-                activeChannel.name,
-                activeChannel.members,
-                activeChannel.isPrivate,
-                modalState.channelClicked
-            );
-        }
-    };
 
-    return (
+    return activeChannel ? (
         <Modal
             className="text-white"
             show={modalState.isChannelSettingsModalOpen}
             onHide={handleClose}
         >
             <Modal.Header className="bg-dark" closeButton closeVariant="white">
-                <Modal.Title>#{modalState.channelClicked.name} settings:</Modal.Title>
+                <Modal.Title>#{activeChannel.name} settings:</Modal.Title>
             </Modal.Header>
 
             <Modal.Body className="bg-dark">
@@ -147,20 +169,17 @@ export default function ChannelSettingsModal() {
                         },
                     }}
                     defaultValue={
-                        modalState.channelClicked.members &&
-                        modalState.channelClicked.members
+                        activeChannel.members &&
+                        activeChannel.members
                             .filter(u => u !== currentUserProfile?.uid)
-
-                            .map(user => {
-                                if (!user) return {};
-                                return {value: user, label: getUserByUid(user).displayName};
+                            .map(userUid => {
+                                return {value: userUid, label: getUserByUid(userUid).displayName};
                             })
                     }
                     options={userDatabase
                         .filter(
                             user =>
-                                modalState.channelClicked.members &&
-                                !modalState.channelClicked.members.includes(user.uid)
+                                activeChannel.members && !activeChannel.members.includes(user.uid)
                         )
                         .filter(
                             user =>
@@ -168,7 +187,7 @@ export default function ChannelSettingsModal() {
                         )
                         .map(user => {
                             if (!user) return {};
-                            return {value: user.displayName, label: user.displayName};
+                            return {value: user.uid, label: user.displayName};
                         })}
                 ></Select>
             </Modal.Body>
@@ -176,7 +195,12 @@ export default function ChannelSettingsModal() {
                 <Button variant="success" onClick={handleSaveSettings}>
                     Save
                 </Button>
+                <Button variant="success" onClick={handleDeleteChannel}>
+                    Delete Channel
+                </Button>
             </Modal.Footer>
         </Modal>
+    ) : (
+        <></>
     );
 }

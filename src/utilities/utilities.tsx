@@ -1,4 +1,4 @@
-import {UserRole} from "../context/FirebaseContext";
+import {UserRole} from "./types";
 
 export const timestampToDate = (timestamp: number): string => {
     const date = new Date(timestamp);

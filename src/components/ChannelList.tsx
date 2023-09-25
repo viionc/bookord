@@ -1,7 +1,8 @@
 import {Col} from "react-bootstrap";
-import {Channel, useFirebaseContext} from "../context/FirebaseContext";
+import {useFirebaseContext} from "../context/FirebaseContext";
 import {useModalsContext} from "../context/ModalsContext";
 import ChannelComponent from "./ChannelComponent";
+import {Channel} from "../utilities/types";
 
 export default function ChannelList() {
     const {channels, currentUserProfile} = useFirebaseContext();
@@ -54,17 +55,23 @@ export default function ChannelList() {
                         channel.id === "moderator" &&
                         currentUserProfile?.roles.includes("moderator")
                     )
-                        return <ChannelComponent key={channel.id} {...channel}></ChannelComponent>;
+                        return (
+                            <ChannelComponent key={channel.id} channel={channel}></ChannelComponent>
+                        );
                 })}
                 {channels.map(channel => {
                     if (currentUserProfile && channel.id === "general")
-                        return <ChannelComponent key={channel.id} {...channel}></ChannelComponent>;
+                        return (
+                            <ChannelComponent key={channel.id} channel={channel}></ChannelComponent>
+                        );
                 })}
 
                 {channels.map(channel => {
                     if (channel.id === "general" || channel.id === "moderator") return;
                     if (currentUserProfile && checkIfUserCanSeeChannel(channel)) {
-                        return <ChannelComponent key={channel.id} {...channel}></ChannelComponent>;
+                        return (
+                            <ChannelComponent key={channel.id} channel={channel}></ChannelComponent>
+                        );
                     }
                 })}
             </div>

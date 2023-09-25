@@ -1,5 +1,6 @@
-import {Message, useFirebaseContext} from "../context/FirebaseContext";
+import {useFirebaseContext} from "../context/FirebaseContext";
 import {useModalsContext} from "../context/ModalsContext";
+import {Message} from "../utilities/types";
 
 function Trash({message}: {message: Message}) {
     const {currentUserProfile} = useFirebaseContext();

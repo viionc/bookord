@@ -1,45 +1,17 @@
-import {ReactNode, createContext, useContext, useReducer} from "react";
-import {Channel, Message} from "./FirebaseContext";
-
-type ModalsContextProps = {
-    modalState: ModalReducerState;
-    handleModalReducer: (action: ModalAction) => void;
-};
+import {createContext, useContext, useReducer} from "react";
+import {
+    Channel,
+    ModalAction,
+    ModalReducerState,
+    ModalsContextProps,
+    ModalsProviderProps,
+} from "../utilities/types";
 
 const ModalsContext = createContext({} as ModalsContextProps);
 
 export function useModalsContext() {
     return useContext(ModalsContext);
 }
-
-type ModalsProviderProps = {
-    children: ReactNode;
-};
-
-type ModalActionsTypes =
-    | "LOGIN"
-    | "REGISTER"
-    | "ADD_NEW_CHANNEL"
-    | "USER_PROFILE"
-    | "CHANNEL_SETTINGS"
-    | "DELETE_MESSAGE";
-
-type ModalAction = {
-    type: ModalActionsTypes;
-    payload?: string | Channel | Message;
-};
-
-type ModalReducerState = {
-    isLoginModalOpen: boolean;
-    isRegisterModalOpen: boolean;
-    isAddNewChannelModalOpen: boolean;
-    isUserProfileModalOpen: boolean;
-    isChannelSettingsModalOpen: boolean;
-    isDeleteMessageModalOpen: boolean;
-    profileUidClicked: string;
-    messageUidClicked: string;
-    channelClicked: Channel;
-};
 
 export function ModalsProvider({children}: ModalsProviderProps) {
     const MODALS_INITIAL_STATE: ModalReducerState = {
@@ -51,15 +23,7 @@ export function ModalsProvider({children}: ModalsProviderProps) {
         isDeleteMessageModalOpen: false,
         profileUidClicked: "",
         messageUidClicked: "",
-        channelClicked: {
-            name: "",
-            members: [],
-            owner: "",
-            messages: [],
-            role: "member",
-            id: "",
-            isPrivate: false,
-        } as Channel,
+        channelClicked: null,
     };
 
     function modalReducer(state: ModalReducerState, action: ModalAction) {

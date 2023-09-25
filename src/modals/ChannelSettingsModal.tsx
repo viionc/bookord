@@ -12,6 +12,7 @@ export default function ChannelSettingsModal() {
         useFirebaseContext();
 
     const [activeChannel, setActiveChannel] = useState(modalState.channelClicked);
+    const [deleteButtonClicked, setDeleteButtonClicked] = useState(false);
 
     const handleClose = () => {
         handleModalReducer({type: "CHANNEL_SETTINGS", payload: activeChannel});
@@ -72,6 +73,7 @@ export default function ChannelSettingsModal() {
     const handleDeleteChannel = () => {
         if (!activeChannel) return;
         deleteChannel(activeChannel.id);
+        setDeleteButtonClicked(false);
         handleClose();
     };
 
@@ -197,9 +199,19 @@ export default function ChannelSettingsModal() {
                 <Button variant="success" onClick={handleSaveSettings}>
                     Save
                 </Button>
-                <Button variant="danger" onClick={handleDeleteChannel}>
+                <Button
+                    variant="warning"
+                    onClick={() => {
+                        setDeleteButtonClicked(true);
+                    }}
+                >
                     Delete Channel
                 </Button>
+                {deleteButtonClicked && (
+                    <Button variant="danger" onClick={handleDeleteChannel}>
+                        Are you sure?
+                    </Button>
+                )}
             </Modal.Footer>
         </Modal>
     ) : (

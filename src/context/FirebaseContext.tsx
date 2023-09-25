@@ -41,6 +41,7 @@ type FirebaseContextProps = {
     loginAnonymously: () => void;
     logoutUser: () => void;
     sendMessage: (message: Message) => void;
+    deleteMessage: (message: Message) => void;
     currentChannel: string;
     channels: Channel[];
     addNewChannel: (name: string, isPrivate: boolean) => void;
@@ -365,6 +366,15 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         });
     };
 
+    const deleteMessage = (message: Message) => {
+        if (!currentUser) return;
+        const messages = channels
+            .filter(ch => ch.id === currentChannel)[0]
+            .messages.filter(m => m.messageUid !== message.messageUid);
+        updateDoc(doc(db, "channels", currentChannel), {
+            messages: messages,
+        });
+    };
     const likeMessage = (message: Message) => {
         if (!currentUser) return;
         const messages = channels.filter(ch => ch.id === currentChannel)[0].messages;
@@ -453,6 +463,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
                 loginAnonymously,
                 logoutUser,
                 sendMessage,
+                deleteMessage,
                 channels,
                 currentChannel,
                 addNewChannel,

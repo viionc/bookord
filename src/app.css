@@ -56,3 +56,10 @@ body {
 .hover:hover {
     opacity: 0.7;
 }
+.trash-icon {
+    cursor: pointer;
+    height: 30px;
+}
+.trash-icon:hover {
+    fill: white;
+}

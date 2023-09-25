@@ -1,7 +1,7 @@
 import {User} from "firebase/auth";
 import {Message, useFirebaseContext} from "../context/FirebaseContext";
 
-const Reaction: React.FC<Message> = (message: Message) => {
+const Reaction = ({message}: {message: Message}) => {
     const {likeMessage, currentUser, removeLikeMessage} = useFirebaseContext();
 
     const handleLikeMessage = (message: Message) => {

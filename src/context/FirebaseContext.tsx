@@ -32,6 +32,7 @@ import {
     UserProfile,
     FirebaseContextProps,
 } from "../utilities/types";
+import {getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
@@ -51,6 +52,7 @@ export function useFirebaseContext() {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const storage = getStorage();
 
 export const db = getFirestore(app);
 
@@ -141,21 +143,41 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         });
     }
 
-    const registerUser = (email: string, password: string, username: string) => {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(userCredential => {
-                console.log("user created", new Date(Date.now()));
-                updateProfile(userCredential.user, {
-                    displayName: username,
-                })
-                    .then(() => setCurrentUser(userCredential.user))
-                    .then(() => addUserToDatabase(createCurrentUserProfile(userCredential.user)));
-            })
-            .catch(error => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage);
-            });
+    const registerUser = async (
+        email: string,
+        password: string,
+        username: string,
+        avatar: FileList | null
+    ) => {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, {displayName: username});
+        if (avatar) {
+            const avatarRef = ref(storage, `avatars/${userCredential.user.uid}`);
+            await uploadBytes(avatarRef, avatar[0]);
+        }
+        setCurrentUser(userCredential.user);
+        const profile = await createCurrentUserProfile(userCredential.user, avatar);
+        await addUserToDatabase(profile);
+
+        // .then(userCredential => {
+        //     console.log("user created", new Date(Date.now()));
+        //     updateProfile(userCredential.user, {
+        //         displayName: username,
+        //     })
+        //         .then(() => {
+        //             if (avatar) {
+        //                 const avatarRef = ref(storage, `avatars/${userCredential.user.uid}`);
+        //                 uploadBytes(avatarRef, avatar[0]);
+        //             }
+        //         })
+        //         .then(() => setCurrentUser(userCredential.user))
+        //         .then(() => addUserToDatabase(createCurrentUserProfile(userCredential.user)));
+        // })
+        // .catch(error => {
+        //     const errorCode = error.code;
+        //     const errorMessage = error.message;
+        //     console.log(errorCode, errorMessage);
+        // });
     };
 
     const loginUser = (email: string, password: string): void | null => {
@@ -166,19 +188,26 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         });
     };
 
-    const loginAnonymously = () => {
-        signInAnonymously(auth)
-            .then(userCredential => {
-                console.log("user created", new Date(Date.now()));
-                updateProfile(userCredential.user, {
-                    displayName: `anon-${Math.floor(Math.random() * 10000)}`,
-                })
-                    .then(() => setCurrentUser(userCredential.user))
-                    .then(() => addUserToDatabase(createCurrentUserProfile(userCredential.user)));
-            })
-            .catch(error => {
-                alert(error.errorMessage);
-            });
+    const loginAnonymously = async () => {
+        const userCredential = await signInAnonymously(auth);
+        await updateProfile(userCredential.user, {
+            displayName: `anon-${Math.floor(Math.random() * 10000)}`,
+        });
+        setCurrentUser(userCredential.user);
+        const profile = await createCurrentUserProfile(userCredential.user, null);
+        await addUserToDatabase(profile);
+        // signInAnonymously(auth)
+        //     .then(userCredential => {
+        //         console.log("user created", new Date(Date.now()));
+        //         updateProfile(userCredential.user, {
+        //             displayName: `anon-${Math.floor(Math.random() * 10000)}`,
+        //         })
+        //             .then(() => setCurrentUser(userCredential.user))
+        //             .then(() => addUserToDatabase(createCurrentUserProfile(userCredential.user, null)));
+        //     })
+        //     .catch(error => {
+        //         alert(error.errorMessage);
+        //     });
     };
 
     const logoutUser = () => {
@@ -198,12 +227,20 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
             });
     };
 
-    const createCurrentUserProfile = (user: User): UserProfile => {
+    const createCurrentUserProfile = async (
+        user: User,
+        avatar: FileList | null
+    ): Promise<UserProfile> => {
+        let avatarURL = null;
+        if (avatar) {
+            avatarURL = await getAvatarURL(user.uid);
+        }
+        console.log(avatarURL);
         const profile: UserProfile = {
             displayName: user.displayName || "",
             uid: user.uid,
             roles: ["member"],
-            photoURL: user.photoURL,
+            avatar: avatarURL,
             createdAt: Date.now(),
             totalMessagesSent: 0,
             friends: [],
@@ -212,6 +249,10 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
         return profile;
     };
 
+    const getAvatarURL = (userUid: string) => {
+        let url = getDownloadURL(ref(storage, `avatars/${userUid}`));
+        return url;
+    };
     const getUserByUid = (userUid: string): UserProfile => {
         return userDatabase.filter(u => u.uid === userUid)[0];
     };
@@ -221,7 +262,7 @@ export function FirebaseProvider({children}: FirebaseProviderProps) {
     };
 
     function addUserToDatabase(user: UserProfile) {
-        setDoc(doc(db, "users", user.uid), user);
+        return new Promise(() => setDoc(doc(db, "users", user.uid), user));
     }
 
     function addNewChannel(name: string, isPrivate: boolean) {

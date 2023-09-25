@@ -199,14 +199,16 @@ export default function ChannelSettingsModal() {
                 <Button variant="success" onClick={handleSaveSettings}>
                     Save
                 </Button>
-                <Button
-                    variant="warning"
-                    onClick={() => {
-                        setDeleteButtonClicked(true);
-                    }}
-                >
-                    Delete Channel
-                </Button>
+                {activeChannel.name !== "general" && activeChannel.name !== "moderator" && (
+                    <Button
+                        variant="warning"
+                        onClick={() => {
+                            setDeleteButtonClicked(true);
+                        }}
+                    >
+                        Delete Channel
+                    </Button>
+                )}
                 {deleteButtonClicked && (
                     <Button variant="danger" onClick={handleDeleteChannel}>
                         Are you sure?

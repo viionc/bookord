@@ -4,6 +4,7 @@ import {useFirebaseContext} from "../context/FirebaseContext";
 import {useEffect, useState} from "react";
 import {getColorByUserRole, timestampToDate} from "../utilities/utilities";
 import {UserProfile} from "../utilities/types";
+import userImage from "../assets/user.png";
 
 export default function UserProfileModal() {
     const {handleModalReducer, modalState} = useModalsContext();
@@ -33,7 +34,15 @@ export default function UserProfileModal() {
         <Modal show={modalState.isUserProfileModalOpen} onHide={handleClose}>
             <Modal.Header closeButton className="bg-dark" closeVariant="white">
                 <Modal.Title style={{color: usernameColor}} className="d-flex flex-column">
-                    <p className="m-0">{clickedUserProfile.displayName}</p>
+                    <div className="d-flex h-100 align-items-center gap-1">
+                        <img
+                            src={clickedUserProfile.avatar ? clickedUserProfile.avatar : userImage}
+                            height={32}
+                            width={32}
+                            className="rounded-circle"
+                        ></img>
+                        <p className="m-0">{clickedUserProfile.displayName}</p>
+                    </div>
                     <p className="m-0 text-secondary fs-6">
                         Joined: {timestampToDate(clickedUserProfile.createdAt)}
                     </p>

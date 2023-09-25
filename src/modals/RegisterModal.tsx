@@ -14,6 +14,7 @@ export default function RegisterModal() {
     const [enterPassword, setEnterPassword] = useState(false);
     const [passwordTooShort, setPasswordTooShort] = useState(false);
     const [nameAlreadyExists, setNameAlreadyExists] = useState(false);
+    const [avatar, setAvatar] = useState<FileList | null>(null);
 
     const {handleModalReducer, modalState} = useModalsContext();
     const {registerUser, userDatabase, loginAnonymously} = useFirebaseContext();
@@ -67,7 +68,7 @@ export default function RegisterModal() {
         setUsername("");
         setConfirmPassword("");
         handleClose();
-        registerUser(email, password, username);
+        registerUser(email, password, username, avatar);
     };
 
     const handleAnonLogin = () => {
@@ -101,6 +102,16 @@ export default function RegisterModal() {
                         {nameAlreadyExists && (
                             <Form.Text className="text-danger">Username taken.</Form.Text>
                         )}
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Avatar: (optional)</Form.Label>
+                        <Form.Control
+                            type="file"
+                            onChange={e => setAvatar((e.target as HTMLInputElement).files)}
+                            accept="image/*"
+                            placeholder="Select an image."
+                            className="bg-secondary"
+                        ></Form.Control>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>Email:</Form.Label>

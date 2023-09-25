@@ -12,7 +12,12 @@ export type FirebaseContextProps = {
     currentUserProfile: UserProfile | null;
     userDatabase: UserProfile[];
     dataLoaded: boolean;
-    registerUser: (ussername: string, email: string, password: string) => void;
+    registerUser: (
+        ussername: string,
+        email: string,
+        password: string,
+        avatar: FileList | null
+    ) => void;
     loginUser: (email: string, password: string) => void;
     loginAnonymously: () => void;
     logoutUser: () => void;
@@ -33,7 +38,7 @@ export type FirebaseContextProps = {
 export type UserProfile = {
     displayName: string;
     uid: string;
-    photoURL: string | null;
+    avatar: string | null;
     roles: UserRole[];
     createdAt: number;
     totalMessagesSent: number;

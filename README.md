@@ -31,3 +31,16 @@ Currently available features:
 - ability to change channel settings (name, members of the channel, privacy level) and an option to delete channel
 
 - user profiles
+
+
+TODO:
+
+- user moderation (banning/deleting users and retroactively deleting or hiding messages sent by that user)
+
+- private message system
+
+- going to have to learn how to cache images
+
+- user settings system
+
+- continuing on making the styling better and making the site more responsive

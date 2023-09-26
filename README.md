@@ -6,9 +6,20 @@ Real-time chat application.
 
 It was built with Vite, Authentication, Database, and hosting provided by Firebase.
 
+## Running the project
+
+You're going to need to make a Firebase account and set up Authentication, Firestore Database, Storage and optionally Hosting.
+
+<img src="https://i.ibb.co/nkdfhYs/image.png" alt="firebase-config">
+
+After that, you can update your Firebase config in FirebaseContext.tsx.
+
+<img src="https://i.ibb.co/RYj5cPb/image.png" alt="firebase-config">
+
+## Features/TODOS
 Currently available features:
 
-- authentication system that allows creating new users (later on added ability to login as anonymous)
+- authentication system that allows creating new users (later on added ability to log in as anonymous)
 
 - realtime chat
 

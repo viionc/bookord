@@ -44,3 +44,8 @@ TODO:
 - user settings system
 
 - continuing on making the styling better and making the site more responsive
+
+<p align="center">
+  <img src="https://i.ibb.co/Nr2dSNp/image.png" alt="bookord-preview">
+</p>
+

@@ -5,7 +5,7 @@ import userImage from "../assets/user.png";
 function UserListComponent({user, color}: {user: UserProfile; color: string}) {
     const {handleModalReducer} = useModalsContext();
     return (
-        <div className="d-flex h-100 align-items-center gap-1">
+        <div className="d-flex h-100 align-items-center gap-1 hover">
             <div>
                 <img
                     className="rounded-circle"
@@ -15,7 +15,7 @@ function UserListComponent({user, color}: {user: UserProfile; color: string}) {
                 ></img>
             </div>
             <h5
-                className="m-0 hover"
+                className="m-0"
                 style={{color: color}}
                 onClick={() => handleModalReducer({type: "USER_PROFILE", payload: user.uid})}
             >

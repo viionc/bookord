@@ -35,7 +35,7 @@ const ChannelComponent = ({channel}: {channel: Channel}) => {
             onClick={() => handleChannelClicked(channel)}
         >
             <div className="">
-                <h5 className={`m-0 hover`}>#{channel.name}</h5>
+                <h5 className={`m-0`}>#{channel.name}</h5>
             </div>
             {currentUserProfile && checkIfCanSeeChannelSettingButton(channel) && (
                 <div className="d-flex justify-content-end align-items-center">

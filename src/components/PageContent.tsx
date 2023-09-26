@@ -12,7 +12,7 @@ export default function PageContent() {
     const {currentUser, dataLoaded} = useFirebaseContext();
     return currentUser ? (
         dataLoaded ? (
-            <Row className="gap-1 h-100 mh-100">
+            <Row className="gap-1 h-100 mh-100 position-relative">
                 <ChannelList></ChannelList>
                 <Feed></Feed>
                 <UserList></UserList>

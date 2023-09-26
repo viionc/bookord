@@ -65,3 +65,23 @@ body {
 .trash-icon:hover {
     fill: white;
 }
+
+@media only screen and (max-width: 1000px) {
+    #channel-list {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 5;
+        width: 100%;
+    }
+    #user-list {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 4;
+        width: 100%;
+    }
+    .side-button {
+        display: flex !important;
+    }
+}

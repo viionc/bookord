@@ -34,14 +34,16 @@ import {
 } from "../utilities/types";
 import {getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 
+//setup your config here
+
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
-    authDomain: "socialbook-6872e.web.app",
-    projectId: "socialbook-6872e",
-    storageBucket: "socialbook-6872e.appspot.com",
-    messagingSenderId: "771188516712",
-    appId: "1:771188516712:web:de860f440603ffb23e98dd",
-    measurementId: "G-HKZH7WT4QG",
+    authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_APP_ID,
+    measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
 const FirebaseContext = createContext({} as FirebaseContextProps);

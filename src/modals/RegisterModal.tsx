@@ -74,6 +74,7 @@ export default function RegisterModal() {
     };
 
     const handleAnonLogin = () => {
+        dispatch({type: "RESET", name: "reset", payload: null});
         loginAnonymously();
         handleClose();
     };

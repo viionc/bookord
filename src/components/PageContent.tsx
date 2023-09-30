@@ -1,4 +1,4 @@
-import {Row} from "react-bootstrap";
+import {Row, Spinner} from "react-bootstrap";
 import {useFirebaseContext} from "../context/FirebaseContext";
 import AddNewChannelModal from "../modals/AddNewChannelModal";
 import ChannelList from "./ChannelList";
@@ -7,6 +7,7 @@ import Feed from "./Feed";
 import UserList from "./UserList";
 import UserProfileModal from "../modals/UserProfileModal";
 import DeleteMessageModal from "../modals/DeleteMessageModal";
+import UserSettingsModal from "../modals/UserSettingsModal";
 
 export default function PageContent() {
     const {currentUser, dataLoaded} = useFirebaseContext();
@@ -20,13 +21,16 @@ export default function PageContent() {
                 <UserProfileModal></UserProfileModal>
                 <ChannelSettingsModal></ChannelSettingsModal>
                 <DeleteMessageModal></DeleteMessageModal>
+                <UserSettingsModal></UserSettingsModal>
             </Row>
         ) : (
             <div
                 className="h-100 w-100 d-flex justify-content-center align-items-center text-white"
                 style={{backgroundColor: "#313338"}}
             >
-                <h1>Loading channels...</h1>
+                <Spinner animation="border" role="status" style={{height: "5rem", width: "5rem"}}>
+                    <span className="visually-hidden">Loading...</span>
+                </Spinner>
             </div>
         )
     ) : (

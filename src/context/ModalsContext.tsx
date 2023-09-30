@@ -21,6 +21,7 @@ export function ModalsProvider({children}: ModalsProviderProps) {
         isUserProfileModalOpen: false,
         isChannelSettingsModalOpen: false,
         isDeleteMessageModalOpen: false,
+        isUserSettingsModalOpen: false,
         profileUidClicked: "",
         messageUidClicked: "",
         channelClicked: null,
@@ -61,6 +62,11 @@ export function ModalsProvider({children}: ModalsProviderProps) {
                     ...state,
                     isUserProfileModalOpen: !state.isUserProfileModalOpen,
                     profileUidClicked: payload as string,
+                };
+            case "USER_SETTINGS":
+                return {
+                    ...state,
+                    isUserSettingsModalOpen: !state.isUserSettingsModalOpen,
                 };
             default:
                 return state;

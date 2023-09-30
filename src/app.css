@@ -7,6 +7,7 @@ body,
     margin: 0;
     padding: 0;
     background-color: #1a1a1a;
+    --main-outline: rgb(65, 68, 95);
 }
 .row {
     padding: 0;
@@ -17,7 +18,7 @@ nav,
 #feed,
 #channel-list,
 #user-list {
-    border: 1px solid rgb(65, 68, 95);
+    border: 1px solid var(--main-outline);
     border-radius: 5px;
 }
 
@@ -29,7 +30,7 @@ body {
 #message-container::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
-    background-color: rgb(65, 68, 95);
+    background-color: var(--main-outline);
 }
 #users::-webkit-scrollbar,
 #channels::-webkit-scrollbar,
@@ -56,7 +57,7 @@ body {
 .hover:hover {
     opacity: 0.7;
     background-color: #1a1a1a46;
-    border-radius: 25px;
+    /* border-radius: 25px; */
 }
 .trash-icon {
     cursor: pointer;
@@ -84,4 +85,16 @@ body {
     .side-button {
         display: flex !important;
     }
+}
+
+#settings-button {
+    border: 1px solid var(--main-outline);
+}
+#settings-button:hover {
+    background-color: var(--main-outline) !important;
+}
+
+.settings-buttons button {
+    border: 1px solid var(--main-outline) !important;
+    background-color: rgb(42 43 49);
 }

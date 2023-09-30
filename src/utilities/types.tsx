@@ -12,12 +12,7 @@ export type FirebaseContextProps = {
     currentUserProfile: UserProfile | null;
     userDatabase: UserProfile[];
     dataLoaded: boolean;
-    registerUser: (
-        ussername: string,
-        email: string,
-        password: string,
-        avatar: FileList | null
-    ) => void;
+    registerUser: (ussername: string, email: string, password: string, avatar: FileList | null) => Promise<any>;
     loginUser: (email: string, password: string) => void;
     loginAnonymously: () => void;
     logoutUser: () => void;
@@ -76,13 +71,7 @@ export type ModalsProviderProps = {
     children: ReactNode;
 };
 
-export type ModalActionsTypes =
-    | "LOGIN"
-    | "REGISTER"
-    | "ADD_NEW_CHANNEL"
-    | "USER_PROFILE"
-    | "CHANNEL_SETTINGS"
-    | "DELETE_MESSAGE";
+export type ModalActionsTypes = "LOGIN" | "REGISTER" | "ADD_NEW_CHANNEL" | "USER_PROFILE" | "CHANNEL_SETTINGS" | "DELETE_MESSAGE" | "USER_SETTINGS";
 
 export type ModalAction = {
     type: ModalActionsTypes;
@@ -96,6 +85,7 @@ export type ModalReducerState = {
     isUserProfileModalOpen: boolean;
     isChannelSettingsModalOpen: boolean;
     isDeleteMessageModalOpen: boolean;
+    isUserSettingsModalOpen: boolean;
     profileUidClicked: string;
     messageUidClicked: string;
     channelClicked: Channel | null;
@@ -105,3 +95,63 @@ export type ModalsContextProps = {
     modalState: ModalReducerState;
     handleModalReducer: (action: ModalAction) => void;
 };
+
+export type SettingsAction = {
+    type: SettingsActionTypes;
+    payload?: string | FileList | null;
+};
+export type SettingsActionTypes =
+    | "USERNAME"
+    | "EMAIL"
+    | "PASSWORD"
+    | "CONFIRM_PASSWORD"
+    | "AVATAR"
+    | "RESET"
+    | "OPEN_USERNAME_FORM"
+    | "OPEN_AVATAR_FORM"
+    | "OPEN_EMAIL_FORM"
+    | "OPEN_PASSWORD_FORM";
+
+export type SettingsReducerState = {
+    username: string;
+    avatar: FileList | null;
+    password: string;
+    confirmPassword: string;
+    email: string;
+    usernameActive: boolean;
+    emailActive: boolean;
+    passwordActive: boolean;
+    avatarActive: boolean;
+};
+export type RegisterFormReducer = {
+    username: string;
+    avatar: FileList | null;
+    password: string;
+    confirmPassword: string;
+    email: string;
+    hasEnteredUsername: boolean;
+    nameAlreadyExists: boolean;
+    isEmailValid: boolean;
+    hasEnteredPassword: boolean;
+    emailAlreadyExists: boolean;
+    isLoading: boolean;
+};
+export type RegisterFormAction = {
+    type: RegisterFormActionTypes;
+    payload: string | FileList | null | boolean;
+    name: RegisterFormActionNames;
+};
+export type RegisterFormActionTypes = "INPUT" | "RESET" | "VALIDATE";
+export type RegisterFormActionNames =
+    | "username"
+    | "email"
+    | "password"
+    | "confirmPassword"
+    | "avatar"
+    | "hasEnteredUsername"
+    | "nameAlreadyExists"
+    | "isEmailValid"
+    | "hasEnteredPassword"
+    | "emailAlreadyExists"
+    | "reset"
+    | "isLoading";

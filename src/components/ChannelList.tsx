@@ -66,7 +66,7 @@ export default function ChannelList() {
                     <div className="text-white d-flex justify-content-evenly align-items-center">
                         <div className="fs-5">Text Channels</div>
                         <div
-                            className="fs-1 d-flex justify-content-center align-items-center hover"
+                            className="fs-1 d-flex justify-content-center align-items-center hover rounded-circle"
                             style={{cursor: "pointer", height: 60, width: 60}}
                             onClick={handleAddChannel}
                         >
